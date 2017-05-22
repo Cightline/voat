@@ -2,9 +2,10 @@
 
 
 # DEPENDENCIES:
-    - flask-restful
-    - flask
-    - sqlalchemy
+* flask-restful
+* flask
+* sqlalchemy
+* passlib
 
 
 
