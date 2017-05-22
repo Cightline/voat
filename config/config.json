@@ -1,1 +1,3 @@
-/etc/voat/config/config.json
+{
+    "SQLALCHEMY_DATABASE_URI":"sqlite:////etc/voat/db/voat.db"
+}
