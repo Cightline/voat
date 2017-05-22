@@ -2,6 +2,9 @@
 
 
 # DEPENDENCIES:
+
+You can install these with pip (python-pip on Arch Linux)
+
 * flask-restful
 * flask
 * sqlalchemy
