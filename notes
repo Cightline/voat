@@ -4,9 +4,6 @@ DEPENDENCIES:
     - sqlalchemy
 
 
-RUNNING:
-    - change the configuration directory to where ever your config is. 
-
 
 NOTES:
     - most of the paths and imports a relational, not absolute. This needs to be fixed. 
