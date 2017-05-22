@@ -15,7 +15,8 @@ class SubVoat(Base):
 
 class Post(Base):
     __tablename__ = 'posts'
-
+    
+    id            = Column(Integer, primary_key=True)
     value         = Column(String(200))
     username      = Column(String(200))
     creation_date = Column(DateTime)
