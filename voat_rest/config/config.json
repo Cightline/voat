@@ -1,0 +1,3 @@
+{
+    "SQLALCHEMY_DATABASE_URI":"sqlite:////home/stealth/programming/voat-rest/config/config.json"
+}
