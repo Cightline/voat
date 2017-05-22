@@ -15,7 +15,8 @@ You can install these with pip (python-pip on Arch Linux)
 # RUNNING:
 on the first run only
 
-```mkdir /etc/voat
+```
+mkdir /etc/voat
 mkdir /etc/voat/db
 mkdir /etc/voat/config
 useradd voat
@@ -23,7 +24,7 @@ chown -R voat:voat /etc/voat
 chmod -R 775 /etc/voat
 ```
 
-link the config to `/etc/voat/config/config.json`
+link the config
 
 ```ln -s [config_path] /etc/voat/config/config.json```
 
