@@ -12,7 +12,9 @@
 # RUNNING:
 on the first run (or after changes)  
 `cd /where/ever/voat/libs`
+
 `sudo python setup.py install`
+
 `sudo su voat -c "python tools/create_db.py"`
 
 to start the server
