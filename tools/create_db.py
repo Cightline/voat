@@ -6,9 +6,9 @@ from sqlalchemy.orm             import Session
 from sqlalchemy                 import create_engine
 from sqlalchemy_utils.functions import database_exists, drop_database
 
-from .sql.user_schema import *
-from .sql.db_connect  import Connect
-from .sql             import initialize_sql
+from voat_sql.schemas     import *
+from voat_sql.db_connect  import Connect
+from voat_sql             import initialize_sql
 
 
 class CreateDB():
@@ -27,7 +27,7 @@ class CreateDB():
 if __name__ == '__main__':
     # Reads the config file, creates the database, checks to make sure it was actually created
     
-    with open('config/config.json') as c:
+    with open('/etc/voat/config/config.json') as c:
         cfg     = json.load(c)
         db_path = cfg['SQLALCHEMY_DATABASE_URI']
 

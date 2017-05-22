@@ -5,7 +5,7 @@ from flask import Flask
 from flask_restful import Resource, Api, reqparse
 
 # THESE NEED TO BE "INSTALLED" RATHER THAN IMPORTING FROM THE CURRENT DIRECTORY. 
-from sql.db_connect import Connect
+from voat_sql.db_connect import Connect
 
 
 from passlib.apps import custom_app_context as pwd_context
