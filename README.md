@@ -1,18 +1,26 @@
-DEPENDENCIES:
+
+
+
+# DEPENDENCIES:
     - flask-restful
     - flask
     - sqlalchemy
 
 
 
-RUNNING:
-    - on the first run (or after changes) cd to voat/libs and run:
-        sudo python setup.py install
+# RUNNING:
+on the first run (or after changes) cd to voat/libs and run
 
-    - on the first run (or after changes) run:
-        sudo su voat -c "python tools/create_db.py"
+`sudo python setup.py install`
 
 
-    - to start the server:
-        sudo su voat -c "python rest_server.py" 
+on the first run (or after changes) run
+
+`sudo su voat -c "python tools/create_db.py"`
+
+
+
+to start the server
+
+`sudo su voat -c "python rest_server.py"`
 
