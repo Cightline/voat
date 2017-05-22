@@ -5,4 +5,7 @@ DEPENDENCIES:
 
 
 
+RUNNING:
+    - sudo su voat -c "python rest_server.py" 
+
 NOTES:
