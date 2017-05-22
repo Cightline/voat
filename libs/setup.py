@@ -7,7 +7,9 @@ setup(
         packages=[
                     'voat_sql', 
                     'voat_sql.schemas',
-                    'voat_rest'],
+                    'voat_sql.utils',
+                    'voat_rest',
+                    'voat_utils'],
 
         license='GPL v3'
      )

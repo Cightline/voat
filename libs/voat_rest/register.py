@@ -22,6 +22,7 @@ class Register(Resource):
     
         # check to make sure doesn't exist
 
+
         # hash the password
 
         # validate it

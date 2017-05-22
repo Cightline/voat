@@ -4,13 +4,16 @@ import json
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 
+from passlib.apps import custom_app_context as pwd_context
+
 from voat_sql.db_connect import Connect
 
-from voat_rest import register
-from voat_rest import authenticate
+# API classes
+from voat_rest  import register
+from voat_rest  import authenticate
+from voat_utils import config
 
 
-from passlib.apps import custom_app_context as pwd_context
 
 
 # Need a logger
@@ -18,15 +21,7 @@ from passlib.apps import custom_app_context as pwd_context
 app = Flask(__name__)
 api = Api(app)
 
-
-with open('/etc/voat/config/config.json') as cfg:
-    config = json.load(cfg)
-
-
-app.config.update(config)
-
-
-db = Connect(app.config['SQLALCHEMY_DATABASE_URI'])
+app.config.update(config.get_config())
 
 
 
