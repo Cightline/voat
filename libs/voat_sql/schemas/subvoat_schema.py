@@ -18,7 +18,8 @@ class Post(Base):
     
     id            = Column(Integer, primary_key=True)
     value         = Column(String(200))
-    username      = Column(String(200))
+    # Change this to the users ID, that way it can follow nick changes.
+    user_id       = Column(Integer)
     creation_date = Column(DateTime)
     subvoat_id    = Column(Integer, ForeignKey('subvoat.id'))
 
