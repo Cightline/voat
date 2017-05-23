@@ -1,6 +1,4 @@
-from flask_restful import Resource, Api, reqparse
-
-from passlib.apps import custom_app_context as pwd_context
+from flask_restful import Resource, reqparse
 
 from voat_sql.utils.user import UserUtils
 
@@ -27,17 +25,14 @@ class Authenticate(Resource):
         elif args['password'] == None or args['password'] == '':
             return {'error':'password has no length'}
 
+        elif args['username'] == None or args['username'] == '':
+            return {'error':'username has no length'}
 
-        # see if the user even exists
 
-        user = user_utils.get_user(username=args['username'])
+        user = user_utils.authenticate_by_password(args['username'], args['password'])
 
         if not user:
-            return {'error':'user does not exist'}
-
-
-        if not pwd_context.verify(args['password'], user.password_hash):
-            return {'error':'incorrect password'}
+            return {'error':'incorrect login'}
 
 
         return {'result':{'api_token':user.api_token, 'username':user.username}}

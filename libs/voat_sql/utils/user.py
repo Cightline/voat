@@ -1,6 +1,6 @@
+from passlib.apps  import custom_app_context as pwd_context
 
 from voat_sql.utils import db
-
 
 
 class UserUtils():
@@ -19,5 +19,21 @@ class UserUtils():
         return self.db.session.query(self.classes.users).filter(self.classes.users.username == username).first()
     
 
-    
-        
+    def authenticate_by_password(self, username, password):
+        user = self.get_user(username)
+
+        if not user:
+            return False
+
+        if pwd_context.verify(password, user.password_hash):
+            return user
+
+
+    def authenticate_by_token(self, username, api_token):
+        user = self.get_user(username)
+
+        if not user:
+            return False
+
+        if user.api_token == user.api_token:
+            return user
