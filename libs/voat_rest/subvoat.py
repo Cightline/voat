@@ -64,7 +64,7 @@ class AddSubvoat(Resource):
 
 
 class ListSubvoats(Resource):
-    def post(self):
+    def get(self):
         subvoat_utils = SubvoatUtils()
         parser        = reqparse.RequestParser()
         subvoats      = []
@@ -76,3 +76,33 @@ class ListSubvoats(Resource):
             subvoats.append(s.name)
 
         return {'result':subvoats}
+
+
+class GetPosts(Resource):
+    def post(self):
+        subvoat_utils = SubvoatUtils()
+        parser        = reqparse.RequestParser()
+        return_data   = []
+
+        parser.add_argument('subvoat_name')
+
+        args = parser.parse_args()
+
+        if 'subvoat_name' not in args:
+            return {'error':'no subvoat given'}
+
+        elif args['subvoat_name'] == None or args['subvoat_name'] == '':
+            return {'error':'no subvoat given'}
+       
+        posts = subvoat_utils.get_posts(args['subvoat_name'])
+
+        
+        for p in posts:
+            return_data.append(p)
+
+        
+        return {'result':return_data}
+
+class GetComments(Resource):
+    pass
+

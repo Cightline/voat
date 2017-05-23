@@ -9,4 +9,7 @@ curl --data "subvoat_name=test_subvoat3&username=test_username&api_token=${api_t
 curl --data "subvoat_name=test_subvoat4&username=test_username&api_token=${api_token}" localhost:5000/create_subvoat
 
 
-curl --data "test=test" localhost:5000/list_subvoats
+curl localhost:5000/list_subvoats
+
+
+curl --data "subvoat_name=test_subvoat" localhost:5000/get_posts

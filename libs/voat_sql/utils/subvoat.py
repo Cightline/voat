@@ -1,4 +1,6 @@
 
+# These classes mainly deal with database interaction
+
 from voat_sql.utils import db
 
 
@@ -32,3 +34,13 @@ class SubvoatUtils():
         result = self.db.session.commit()
 
         return result
+
+
+
+    # Make one that orders by date, with a limit
+    def get_posts(self, subvoat_name):
+        subvoat =  self.db.session.query(self.classes.subvoat).filter(self.classes.subvoat.name == subvoat_name).first()
+
+        print(dir(subvoat.posts_collection))
+
+        return subvoat.posts_collection
