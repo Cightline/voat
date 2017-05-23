@@ -1,6 +1,3 @@
-
-from sqlalchemy.schema import Table
-
 from voat_sql import *
 
 class User(Base):
