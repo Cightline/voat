@@ -1,5 +1,4 @@
-
-from sqlalchemy.schema import Table
+from voat_sql import *
 
 # I'll have to look more into this, there may be a better way. 
 
