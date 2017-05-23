@@ -40,3 +40,8 @@ to start the server
 
 ```sudo su voat -c "python rest_server.py"```
 
+
+# TODO:
+
+- [ ] authentication
+
