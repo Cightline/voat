@@ -8,8 +8,11 @@ class SubVoat(Base):
     __tablename__ = 'subvoat'
 
     id            = Column(Integer, primary_key=True)
-    name          = Column(String(200))
+    name          = Column(String(200), unique=True, nullable=False)
     posts         = relationship('Post')
+    owner_id      = Column(Integer)
+    creator_id    = Column(Integer)
+    creation_date = Column(DateTime)
 
 
 class Post(Base):

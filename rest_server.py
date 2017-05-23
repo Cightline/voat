@@ -11,6 +11,7 @@ from voat_sql.db_connect import Connect
 # API classes
 from voat_rest  import register
 from voat_rest  import authenticate
+from voat_rest  import subvoat
 from voat_utils import config
 
 
@@ -27,7 +28,8 @@ app.config.update(config.get_config())
 
 api.add_resource(authenticate.Authenticate, '/authenticate')
 api.add_resource(register.Register,         '/register')
-
+api.add_resource(subvoat.AddSubvoat,        '/create_subvoat')
+api.add_resource(subvoat.ListSubvoats,      '/list_subvoats')
 
 
 # Debugging

@@ -1,0 +1,12 @@
+
+echo "TESTING SUBVOAT CREATION"
+api_token=`curl --data 'username=test_username&password=test_password' localhost:5000/authenticate | jq -r '.result.api_token'`
+
+curl --data "subvoat_name=test_subvoat&username=test_username&api_token=${api_token}" localhost:5000/create_subvoat
+curl --data "subvoat_name=test_subvoat9&username=test_username&api_token=${api_token}" localhost:5000/create_subvoat
+curl --data "subvoat_name=test_subvoat2&username=test_username&api_token=${api_token}" localhost:5000/create_subvoat
+curl --data "subvoat_name=test_subvoat3&username=test_username&api_token=${api_token}" localhost:5000/create_subvoat
+curl --data "subvoat_name=test_subvoat4&username=test_username&api_token=${api_token}" localhost:5000/create_subvoat
+
+
+curl --data "test=test" localhost:5000/list_subvoats

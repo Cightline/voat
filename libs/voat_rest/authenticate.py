@@ -4,7 +4,6 @@ from voat_sql.utils.user import UserUtils
 
 class Authenticate(Resource):
 
-
     def post(self):
         user_utils = UserUtils()
         parser     = reqparse.RequestParser()
