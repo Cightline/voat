@@ -2,5 +2,9 @@
     "SQLALCHEMY_DATABASE_URI":"sqlite:////etc/voat/db/voat.db",
     "min_length_username":4,
     "min_length_api_token":4,
-    "min_length_subvoat_name":4
+    "min_length_subvoat_name":4,
+    "server_key_bits":1024,
+
+    "whitelisted_servers":["localhost:5001"]
 }
+

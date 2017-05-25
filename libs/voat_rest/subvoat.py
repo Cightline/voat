@@ -21,34 +21,27 @@ class AddSubvoat(Resource):
 
         args = parser.parse_args()
 
+
         # authenticate first
+        user = user_utils.authenticate_by_token(args['username'], args['api_token'])
+    
+    
+        if not user:
+            return {'error':'incorrect login'}
 
-        schema = Schema({
 
-            Required('username'):     All(str, Length(min=config['min_length_username'])),
-            Required('api_token'):    All(str, Length(min=config['min_length_api_token'])),
-            Required('subvoat_name'): All(str, Length(min=config['min_length_subvoat_name'])),
-
-            })
-
+        # should validate the subvoat here
+        schema = Schema({Required('subvoat_name'): All(str, Length(min=config['min_length_subvoat_name']))})
         
         try:
             # Just try the ones we need. 
-            schema({'username':args.get('username'),
-                    'api_token':args.get('api_token'),
-                    'subvoat_name':args.get('subvoat_name')})
+            schema({'subvoat_name':args.get('subvoat_name')})
 
         except MultipleInvalid as e:
             # NEED BETTER ERROR MESSAGES, FIX THIS
             return {'error':'%s %s' % (e.msg, e.path)}
 
-        user = user_utils.authenticate_by_token(args['username'], args['api_token'])
-
-        if not user:
-            return {'error':'incorrect login'}
-
     
-        # should validate the subvoat here
 
 
     
@@ -97,6 +90,48 @@ class SubmitPost(Resource):
         parser.add_argument('body')
         parser.add_argument('username')
         parser.add_argument('api_token')
+        parser.add_argument('original_instance_address')
+       
+        args = parser.parse_args()
+
+        # Data needs to be signed from whatever instance its coming from
+
+        # at startup, we need to fetch the public keys if we do not already have them
+        # contact server, ask for users public key
+        # encrypt some random hash, send to server
+        # original server sends back unencrypted hash 
+        # server also sends users public key (data should be signed by server)
+        # user is allowed to post
+        # users message must be signed
+
+
+        # check to see if original instance is whitelisted
+
+        if not args['original_instance_address'] in whitelisted_instances:
+            return {'error':'server is not whitelisted'}
+
+
+
+        # see if we already have their public key, if not get it (this should be done at startup)
+
+
+
+        # check to see if the message is signed by the original server
+
+
+
+
+
+
+        # check to see if the users public key is banned
+
+
+        # check to see if the message is signed by the user
+
+    
+        # post to board 
+
+
 
         args = parser.parse_args()
 
