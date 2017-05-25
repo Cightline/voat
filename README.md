@@ -9,6 +9,8 @@ You can install these with pip (python-pip on Arch Linux)
 * flask
 * sqlalchemy
 * passlib
+* voluptuous
+* pycrypto
 
 
 
@@ -45,3 +47,7 @@ to start the server
 
 - [ ] authentication
 
+
+# NOTES:
+
+This will probably use PyPy or uWSGI. (https://pypy.org/) (https://uwsgi-docs.readthedocs.io/en/latest/)

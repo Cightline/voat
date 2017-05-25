@@ -7,8 +7,10 @@ class User(Base):
     creation_time = Column(DateTime)
     username      = Column(String(200), unique=True, nullable=False)
     email         = Column(String(200), unique=True)
-    api_token     = Column(String(200))
+    public_key    = Column(String(200))
+    private_key   = Column(String(200))
     password_hash = Column(String(200))
+    api_token     = Column(String(200))
     banned        = Column(Boolean)
 
 

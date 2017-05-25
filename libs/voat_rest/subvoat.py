@@ -2,15 +2,18 @@ import datetime
 
 from flask_restful import Resource, reqparse
 
+from voluptuous import Schema, Required, All, Length, MultipleInvalid
+
 from voat_sql.utils.subvoat import SubvoatUtils
 from voat_sql.utils.user    import UserUtils
-
+from voat_utils.config      import get_config
 
 class AddSubvoat(Resource):
     def post(self):
         subvoat_utils = SubvoatUtils()
         user_utils    = UserUtils()
         parser        = reqparse.RequestParser()
+        config        = get_config()
 
         parser.add_argument('subvoat_name')
         parser.add_argument('username')
@@ -20,19 +23,25 @@ class AddSubvoat(Resource):
 
         # authenticate first
 
-        if 'username' not in args:
-            return {'error':'no username given'}
+        schema = Schema({
 
-        elif 'api_token' not in args:
-            return {'error':'no api_token given'}
+            Required('username'):     All(str, Length(min=config['min_length_username'])),
+            Required('api_token'):    All(str, Length(min=config['min_length_api_token'])),
+            Required('subvoat_name'): All(str, Length(min=config['min_length_subvoat_name'])),
 
-        elif 'subvoat_name' not in args:
-            return {'error':'no subvoat_name given'}
+            })
 
-        elif args['subvoat_name'] == None or args['subvoat_name'] == '':
-            return {'error':'no subvoat_name given'}
+        
+        try:
+            # Just try the ones we need. 
+            schema({'username':args.get('username'),
+                    'api_token':args.get('api_token'),
+                    'subvoat_name':args.get('subvoat_name')})
 
-       
+        except MultipleInvalid as e:
+            # NEED BETTER ERROR MESSAGES, FIX THIS
+            return {'error':'%s %s' % (e.msg, e.path)}
+
         user = user_utils.authenticate_by_token(args['username'], args['api_token'])
 
         if not user:
@@ -78,8 +87,35 @@ class ListSubvoats(Resource):
         return {'result':subvoats}
 
 
-class GetPosts(Resource):
+class SubmitPost(Resource):
     def post(self):
+
+        config = get_config()
+
+        parser.add_argument('subvoat_name')
+        parser.add_argument('title')
+        parser.add_argument('body')
+        parser.add_argument('username')
+        parser.add_argument('api_token')
+
+        args = parser.parse_args()
+
+
+        schema = Schema({ 
+            Required('subvoat_name'): All(str, Length(min=config['min_length_subvoat_name'])),
+            
+            # FIX ME: make this pull from the correct location (it should read the specific subvoat settings from the database)
+            # So if there is a subvoat /v/test, it should read the settings out of the database, because that will be mod controlled. 
+            Required('title'):        All(str, Length(min=5)),
+            # Same here
+            Required('body'):         All(str, Length(min=5))})
+
+
+        
+
+class GetPosts(Resource):
+    def post(self):  
+        config        = get_config()
         subvoat_utils = SubvoatUtils()
         parser        = reqparse.RequestParser()
         return_data   = []
@@ -88,12 +124,14 @@ class GetPosts(Resource):
 
         args = parser.parse_args()
 
-        if 'subvoat_name' not in args:
-            return {'error':'no subvoat given'}
+        schema = Schema({ Required('subvoat_name'): All(str, Length(min=config['min_length_subvoat_name']))})
 
-        elif args['subvoat_name'] == None or args['subvoat_name'] == '':
-            return {'error':'no subvoat given'}
-       
+        try:
+            schema({'subvoat_name':args.get('subvoat_name')})
+
+        except MultipleInvalid as e:
+            return {'error':'%s %s' % (e.msg, e.path)}
+
         posts = subvoat_utils.get_posts(args['subvoat_name'])
 
         

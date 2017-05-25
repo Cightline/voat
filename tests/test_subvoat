@@ -1,15 +1,16 @@
+echo -e "\e[31mTESTING SUBVOAT CREATION\e[39m"
+api_token=`curl -s --data 'username=test_username&password=test_password' localhost:5000/authenticate | jq -r '.result.api_token'`
 
-echo "TESTING SUBVOAT CREATION"
-api_token=`curl --data 'username=test_username&password=test_password' localhost:5000/authenticate | jq -r '.result.api_token'`
-
-curl --data "subvoat_name=test_subvoat&username=test_username&api_token=${api_token}" localhost:5000/create_subvoat
+echo -e "USING API TOKEN ${api_token}"
+curl --data "subvoat_name=tes&username=test_username&api_token=${api_token}" localhost:5000/create_subvoat
 curl --data "subvoat_name=test_subvoat9&username=test_username&api_token=${api_token}" localhost:5000/create_subvoat
 curl --data "subvoat_name=test_subvoat2&username=test_username&api_token=${api_token}" localhost:5000/create_subvoat
 curl --data "subvoat_name=test_subvoat3&username=test_username&api_token=${api_token}" localhost:5000/create_subvoat
 curl --data "subvoat_name=test_subvoat4&username=test_username&api_token=${api_token}" localhost:5000/create_subvoat
 
 
+echo -e "\e[31mLISTING SUBVOATS\e[39m"
 curl localhost:5000/list_subvoats
 
-
+echo -e "\e[31mGETTING POSTS FOR test_subvoat\e[39m"
 curl --data "subvoat_name=test_subvoat" localhost:5000/get_posts

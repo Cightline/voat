@@ -26,9 +26,6 @@ class SubvoatUtils():
 
     
     def add_subvoat(self, new_subvoat):
-        print(new_subvoat.name)
-
-        self.db.session.flush()
         self.db.session.add(new_subvoat)
         
         result = self.db.session.commit()
@@ -41,6 +38,9 @@ class SubvoatUtils():
     def get_posts(self, subvoat_name):
         subvoat =  self.db.session.query(self.classes.subvoat).filter(self.classes.subvoat.name == subvoat_name).first()
 
-        print(dir(subvoat.posts_collection))
+        #print(dir(subvoat.posts_collection))
 
-        return subvoat.posts_collection
+        if subvoat:
+            return subvoat.posts_collection 
+
+        return []

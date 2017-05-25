@@ -28,9 +28,9 @@ class Authenticate(Resource):
             return {'error':'username has no length'}
 
 
-        user = user_utils.authenticate_by_password(args['username'], args['password'])
+        result, user = user_utils.authenticate_by_password(args['username'], args['password'])
 
-        if not user:
+        if result == False:
             return {'error':'incorrect login'}
 
 
