@@ -8,10 +8,11 @@ You can install these with pip (python-pip on Arch Linux)
 * flask-restful
 * flask
 * sqlalchemy
+* sqlalchemy_utils
 * passlib
 * voluptuous
 * pycrypto
-
+* requests
 
 
 # RUNNING:
