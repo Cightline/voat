@@ -12,15 +12,12 @@ start(){
 }
 stop(){
 	if [ -f /var/run/voat.pid ]; then
-		echo "Stopping Voat..."
+		echo "Stopping Voat server..."
 		kill -9 $(cat /var/run/voat.pid)
 		rm /var/run/voat.pid
 	else
-		echo "Voat is not running."
+		echo "Voat server is not running."
 	fi
-}
-createdb(){
-	/usr/bin/python3 $SRC_DIR/tools/create_db.py
 }
 status(){
 	if [ -f /var/run/voat.pid ]; then
@@ -28,7 +25,7 @@ status(){
 		echo "PID: $(cat /var/run/voat.pid)"
 		exit 0
 	else
-		echo "Voat server os mot running"
+		echo "Voat server is not running"
 	fi
 }
 
@@ -46,10 +43,7 @@ case "$1" in
 	status)
 		status
 		;;
-	createdb)
-		createdb
-		;;
 	*)
-		echo "Usage: sudo voat start|stop|restart|createdb"
+		echo "Usage: sudo voat start|stop|restart"
 		exit 1
 esac

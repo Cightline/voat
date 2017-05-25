@@ -56,8 +56,11 @@ fi
 
 echo
 echo "Configuring voat..."
+cd $SRC_DIR/libs
+python3 setup.py install
 cd $SRC_DIR
-python3 libs/setup.py install
+python3 tools/create_db.py
+
 
 echo
 echo "Creating server management script at /usr/bin/voat"
@@ -66,5 +69,4 @@ cp -f bin/voat /usr/bin/voat
 sed -i "s@src-dir@$SRC_DIR@" /usr/bin/voat
 chmod +x /usr/bin/voat
 
-voat createdb
 voat start
