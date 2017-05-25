@@ -1,0 +1,55 @@
+#!/bin/bash
+if [ "$(id -u)" != "0" ]; then
+	echo "Voat must be run as root" 1>&2
+	exit 1
+fi
+SRC_DIR="src-dir"
+
+start(){
+	echo "Starting Voat server..."
+	/usr/bin/python3 $SRC_DIR/rest_server.py &> /var/log/voat.log &
+	echo $! > /var/run/voat.pid
+}
+stop(){
+	if [ -f /var/run/voat.pid ]; then
+		echo "Stopping Voat..."
+		kill -9 $(cat /var/run/voat.pid)
+		rm /var/run/voat.pid
+	else
+		echo "Voat is not running."
+	fi
+}
+createdb(){
+	/usr/bin/python3 $SRC_DIR/tools/create_db.py
+}
+status(){
+	if [ -f /var/run/voat.pid ]; then
+		echo "Voat server is running."
+		echo "PID: $(cat /var/run/voat.pid)"
+		exit 0
+	else
+		echo "Voat server os mot running"
+	fi
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		stop
+		start
+		;;
+	status)
+		status
+		;;
+	createdb)
+		createdb
+		;;
+	*)
+		echo "Usage: sudo voat start|stop|restart|createdb"
+		exit 1
+esac
