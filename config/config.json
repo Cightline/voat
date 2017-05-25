@@ -3,8 +3,10 @@
     "min_length_username":4,
     "min_length_api_token":4,
     "min_length_subvoat_name":4,
+    "min_length_post_title":4,
+    "min_length_post_body":4,
     "server_key_bits":1024,
 
-    "whitelisted_servers":["localhost:5001"]
+    "whitelisted_servers":["http://192.168.1.11:5000"]
 }
 

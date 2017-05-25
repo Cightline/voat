@@ -1,20 +1,30 @@
 
 # These classes mainly deal with database interaction
 
-from voat_sql.utils import db
+import datetime
+
+from voluptuous import Schema, Required, All, Length, MultipleInvalid
+
+from voat_sql.utils      import db
+from voat_utils.config   import get_config
+from voat_sql.utils.user import UserUtils
 
 
 
 class SubvoatUtils():
     def __init__(self):
-        self.db      = db.get_db()
-        self.classes = self.db.base.classes
+        self.db         = db.get_db()
+        self.classes    = self.db.base.classes
+        self.config     = get_config()
+        self.user_utils = UserUtils()
    
 
-    # Returns a user object
+    # Returns a user object (see the schemas)
     def create_subvoat_object(self, **kwargs):
         return self.classes.subvoat(**kwargs)
 
+    def create_post_object(self, **kwargs):
+        return self.classes.posts(**kwargs)
    
     # Returns a user object 
     def get_subvoat(self, subvoat_name):
@@ -33,14 +43,71 @@ class SubvoatUtils():
         return result
 
 
+    # Returns [result, message]
+    def add_post(self, subvoat_name, title, body, username):
 
+        schema = Schema({ 
+            Required('subvoat_name'): All(str, Length(min=self.config['min_length_subvoat_name'])),
+            Required('title'):        All(str, Length(min=self.config['min_length_post_title'])),
+            Required('body'):         All(str, Length(min=self.config['min_length_post_body'])),
+            })
+
+
+        try:
+            schema({'subvoat_name':subvoat_name,
+                    'title':title,
+                    'body':body})
+
+        except MultipleInvalid as e:
+            return [False, '%s %s' % (e.msg, e.path)]
+
+    
+
+        subvoat = self.get_subvoat(subvoat_name)
+
+        if not subvoat:
+            return [False, 'subvoat does not exist']
+
+        # We need to use the user.id  
+    
+        u_result, u_msg = self.user_utils.get_user(username)
+
+        if not u_result:
+            return [False, u_msg]
+
+       
+        # Should this even be here?
+        # u_msg is the user object btw
+        elif not u_msg:
+            return [False, 'user does not exist']
+
+
+
+        new_post = self.create_post_object(title=title,
+                                           body=body,
+                                           user_id=u_msg.id,
+                                           creation_date=datetime.datetime.utcnow())
+
+
+        subvoat.posts_collection.append(new_post)
+
+        self.db.session.commit()
+
+        return [True, 'post added']
+        
     # Make one that orders by date, with a limit
     def get_posts(self, subvoat_name):
+        posts = []
         subvoat =  self.db.session.query(self.classes.subvoat).filter(self.classes.subvoat.name == subvoat_name).first()
 
         #print(dir(subvoat.posts_collection))
 
+        # probably want to limit this
         if subvoat:
-            return subvoat.posts_collection 
+            for post in subvoat.posts_collection:
+                posts.append({'title':post.title,
+                              'body':post.body,
+                              'user_id':post.user_id,
+                              'creation_date':post.creation_date.isoformat()})
 
-        return []
+        return posts

@@ -14,3 +14,5 @@ curl localhost:5000/list_subvoats
 
 echo -e "\e[31mGETTING POSTS FOR test_subvoat\e[39m"
 curl --data "subvoat_name=test_subvoat" localhost:5000/get_posts
+
+

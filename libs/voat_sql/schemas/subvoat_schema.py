@@ -9,7 +9,7 @@ class SubVoat(Base):
 
     id            = Column(Integer, primary_key=True)
     name          = Column(String(200), unique=True, nullable=False)
-    posts         = relationship('Post')
+    posts         = relationship('Post', backref=backref('posts', lazy='noload'))
     owner_id      = Column(Integer)
     creator_id    = Column(Integer)
     creation_date = Column(DateTime)
@@ -20,7 +20,8 @@ class Post(Base):
     
     id            = Column(Integer, primary_key=True)
     value         = Column(String(200))
-    # Change this to the users ID, that way it can follow nick changes.
+    title         = Column(String(200))
+    body          = Column(String(200))
     user_id       = Column(Integer)
     creation_date = Column(DateTime)
     subvoat_id    = Column(Integer, ForeignKey('subvoat.id'))

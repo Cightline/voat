@@ -46,11 +46,15 @@ class UserUtils():
 
         return [False, False]
 
+
     def authenticate_by_token(self, username, api_token):
         result, user = self.get_user(username)
 
         if result == False:
             return False
 
-        if user.api_token == user.api_token:
+        elif not user:
+            return False
+
+        elif user.api_token == user.api_token:
             return user

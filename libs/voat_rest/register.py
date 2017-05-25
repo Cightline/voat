@@ -48,7 +48,8 @@ class Register(Resource):
        
         # Generate the keys (should probably move this to a microservice)
         # http://www.laurentluce.com/posts/python-and-cryptography-with-pycrypto/#a_3
-        
+
+        # FIX THIS 
         random_gen = Random.new().read
 
         key = RSA.generate(1024, random_gen)

@@ -29,18 +29,61 @@ class ServerUtils():
         return False
             
 
-    def get_server(self, address):
-        # FIX THIS UP (validation)
+    def get_public_key(self, address):
+    
+        public_key = self.db.session.query(self.classes.servers).filter(self.classes.servers.address == address).first().public_key
 
-        return [True, self.db.session.query(self.classes.servers).filter(self.classes.servers.address == address).first()]
+        return public_key
+
+
+    def get_server(self, address):
+        return self.db.session.query(self.classes.servers).filter(self.classes.servers.address == address).first()
 
 
     def update_server(self, address):
+        # MORE ERROR CHECKING NEEDED
+
+        try:
+            r = requests.get('%s/get_public_key' % (address))
+
+        except requests.exceptions.ConnectionError as e:
+            return [False, 'unable to establish a connection to %s' % (address)]
+      
         
-        d = requests.get('%s/get_public_key' % (address))
+        if 'result' not in r.json():
+            return [False, 'server responded with no result']
 
-        print(d)
+        # IS THIS SAFE?
+        elif 'error' in r.json():
+            return [False, 'server responded with an error %s' % (r.json()['error'])]
 
 
+        # See if it already exists
+        q = self.get_server(address)
 
-        
+        if not q:
+             
+            new_server = self.classes.servers(address=address,
+                                             public_key=r.json()['result'])
+                                             
+         
+
+            self.db.session.add(new_server)
+            self.db.session.commit()
+      
+            return [True, 'added']
+
+           
+        if q:
+            if q.public_key == r.json()['result']:
+                return [True, 'no change']
+
+            
+            q.public_key = r.json()['result']
+
+            self.db.session.commit()
+
+            return [True, 'updated']
+
+
+        return [False, None]
