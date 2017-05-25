@@ -1,0 +1,4 @@
+
+echo "TESTING PUBLIC KEY"
+curl "localhost:5000/get_public_key"
+
