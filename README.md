@@ -60,7 +60,8 @@ bash start_celery_workers
 bash start_listener 
 ```
 
-The listener listens for new incoming posts and stores them in the database (not complete)
+The listener listens for new incoming posts and stores them in the database (not complete).
+
 The celery workers make certain functions asynchronous
 
 
