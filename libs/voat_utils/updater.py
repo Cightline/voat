@@ -11,7 +11,7 @@ app    = Celery('send', broker=get_config()['broker'])
 
 
 @app.task
-def send_post():
+def send_thread():
     # yep, getting the config 2x. Otherwise it wont update the whitelist when a new task is started
     # FIX CONFIG?
     config = get_config()

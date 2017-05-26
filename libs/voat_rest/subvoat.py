@@ -9,6 +9,7 @@ from voat_sql.utils.servers import ServerUtils
 from voat_sql.utils.user    import UserUtils
 from voat_utils.config      import get_config
 
+
 class AddSubvoat(Resource):
     def post(self):
         subvoat_utils = SubvoatUtils()
@@ -41,9 +42,6 @@ class AddSubvoat(Resource):
         except MultipleInvalid as e:
             # NEED BETTER ERROR MESSAGES, FIX THIS
             return {'error':'%s %s' % (e.msg, e.path)}
-
-    
-
 
     
         # See if the subvoat exists
@@ -81,7 +79,7 @@ class ListSubvoats(Resource):
         return {'result':subvoats}
 
 
-class SubmitPost(Resource):
+class SubmitThread(Resource):
     def post(self):
         server_utils  = ServerUtils()
         subvoat_utils = SubvoatUtils()
@@ -98,7 +96,7 @@ class SubmitPost(Resource):
 
     
         
-        result, message = subvoat_utils.add_post(args['subvoat_name'],
+        result, message = subvoat_utils.add_thread(args['subvoat_name'],
                                                  args['title'],
                                                  args['body'],
                                                  args['username'])
@@ -112,7 +110,7 @@ class SubmitPost(Resource):
 
         
 
-class GetPosts(Resource):
+class GetThreads(Resource):
     def post(self):  
         config        = get_config()
         subvoat_utils = SubvoatUtils()
@@ -131,10 +129,10 @@ class GetPosts(Resource):
         except MultipleInvalid as e:
             return {'error':'%s %s' % (e.msg, e.path)}
 
-        posts = subvoat_utils.get_posts(args['subvoat_name'])
+        threads = subvoat_utils.get_threads(args['subvoat_name'])
 
         
-        for p in posts:
+        for p in threads:
             return_data.append(p)
 
         

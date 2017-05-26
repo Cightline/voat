@@ -1,0 +1,1 @@
+sudo su voat -c "python tools/create_db.py"
