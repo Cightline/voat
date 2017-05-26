@@ -63,6 +63,7 @@ sudo su voat -c "export FLASK_APP=/path/to/voat/rest_server.py; flask run --host
 - [x] private/public key generation for user
 - [x] serving public key
 - [x] simple tool to update whitelisted servers 
+- [ ] verification of whitelisted server 
 - [ ] sharing posts/comments via MQTT 
 - [ ] searching posts/comments locally
 - [ ] searching posts/comments remotely
