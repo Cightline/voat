@@ -7,6 +7,7 @@ You can install these with pip (python-pip on Arch Linux)
 
 * flask-restful
 * flask
+* flask-cors
 * sqlalchemy
 * sqlalchemy_utils
 * passlib
@@ -14,52 +15,37 @@ You can install these with pip (python-pip on Arch Linux)
 * pycrypto
 * requests
 * celery[redis]
+* redis
 
 The following need to be installed
 * redis (pacman -S redis)
 
-
+# Installation
+make sure you have install python3 python3-pip and redis
+```
+chmod +x install.sh
+sudo ./install.sh 
+```
 
 # RUNNING:
-on the first run only
-
-```
-sudo bash install.sh
-```
-
-
-
-## on the first run (or after changes to voat/libs )  
-
-```cd /where/ever/voat/libs
-sudo python setup.py install
-```
-
-## if you make changes to the database schemas, run this to recreate it. 
-```
-sudo su voat -c "python tools/create_db.py"
-```
-
 
 ## to start the server
+Ensure Redis is running:
+`sudo systemctl start redis`
 
-As of now you have to run the following:
+Start the server:
+`sudo voat start`
 
-```
-# ensure redis is running (systemctl start redis)
-bash start_rest_server
-bash start_celery_workers
-bash start_listener 
-```
+This starts the REST server, Celery workers and listeners.
 
 The listener listens for new incoming posts and stores them in the database (not complete).
 
 The celery workers make certain functions asynchronous
 
 
+## to stop the server
+`sudo voat stop`
 
-
-```sudo su voat -c "python rest_server.py"```
 
 ## if you would like to run 2 instances on the same machine
 
