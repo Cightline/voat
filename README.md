@@ -35,7 +35,6 @@ chmod -R 775 /etc/voat
 
 ```cd /where/ever/voat/libs
 sudo python setup.py install
-
 ```
 
 ## if you make changes to the database schemas, run this to recreate it. 
