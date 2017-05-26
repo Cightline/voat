@@ -28,7 +28,7 @@ chmod -R 775 /etc/voat
 
 ## link the config
 
-```sudo su voat -c "ln -s [absolute_config_path] /etc/voat/config/config.json"```
+```sudo su voat -c "ln -s /voat/config/config.json /etc/voat/config/config.json"```
 
 
 ## on the first run (or after changes to voat/libs )  
