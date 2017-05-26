@@ -66,3 +66,21 @@ Users will have a "home" server or "primary provider". This server can be run lo
 
 This will probably use PyPy or uWSGI. (https://pypy.org/) (https://uwsgi-docs.readthedocs.io/en/latest/)
 
+
+# DEVELOPER INFO
+
+As of now, Voat runs from whatever directory you cloned it to. Eventually it will be moved to the proper directory. The config and database are stored (the config.json is technically symlinked) in `/etc/voat`.
+
+
+main functions (main logic really)
+```voat/libs/voat_rest``` 
+
+schemas and database utilities (basically lower level stuff for the main functions) (I may reorganize this)
+```voat/libs/voat_sql``` 
+
+utilities that aren't run from the main functions (I may reorganize this)
+```voat/libs/voat_utils```
+
+
+
+
