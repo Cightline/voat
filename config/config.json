@@ -7,10 +7,9 @@
     "min_length_post_title":4,
     "min_length_post_body":4,
     "server_key_bits":1024,
-    "CELERY_BROKER_URL":"redis://localhost:6379",
-    "CELERY_RESULT_BACKEND":"redis://localhost:6379",
+    "broker":"redis://localhost:6379",
+    "result_backend":"redis://localhost:6379",
 
-
-    "whitelisted_servers":["http://192.168.1.11:5000"]
+    "whitelisted_servers":["http://192.168.1.4:8000"]
 }
 
