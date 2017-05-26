@@ -4,12 +4,14 @@
 import datetime
 import json
 
-from voluptuous import Schema, Required, All, Length, MultipleInvalid
 
-import pika
+import requests
+
+from voluptuous import Schema, Required, All, Length, MultipleInvalid
 
 from voat_sql.utils      import db
 from voat_utils.config   import get_config
+from voat_utils.updater  import send_post
 from voat_sql.utils.user import UserUtils
 
 
@@ -94,15 +96,9 @@ class SubvoatUtils():
         self.db.session.commit()
 
 
-        # JUST TESTING, FIX THIS
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+        # JUST TESTING, FIX THIS (MAKE IT ASYNC, OTHERWISE IT WILL BLOCK)
 
-        channel = connection.channel()
-
-        channel.queue_declare(queue='post')
-        channel.basic_publish(exchange='', routing_key='post', body=json.dumps({'title':title, 'body':body, 'user_id':result.id}))
-
-        connection.close()
+        send_post.delay()
 
         return [True, 'post added']
 
