@@ -79,7 +79,7 @@ Users will have a "home" server or "primary provider". This server can be run lo
 This will probably use PyPy or uWSGI. (https://pypy.org/) (https://uwsgi-docs.readthedocs.io/en/latest/)
 
 
-# DEVELOPER INFO
+# DEVELOPER INFO:
 
 As of now, Voat runs from whatever directory you cloned it to. Eventually it will be moved to the proper directory. The config and database are stored in `/etc/voat`. For the moment I'm using Sqlite, and the config should be symlinked. 
 
