@@ -10,6 +10,6 @@
     "broker":"redis://localhost:6379",
     "result_backend":"redis://localhost:6379",
 
-    "whitelisted_servers":["http://192.168.1.4:8000"]
+    "whitelisted_servers":["http://192.168.1.11:8000"]
 }
 

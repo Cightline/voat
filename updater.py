@@ -21,6 +21,8 @@ class UpdatePost(Resource):
 
         server_utils = ServerUtils()
 
+        parser = reqparse.RequestParser()
+
         parser.add_argument('subvoat_name')
         parser.add_argument('user_id')
         parser.add_argument('original_instance')
