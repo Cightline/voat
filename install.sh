@@ -46,6 +46,7 @@ if [ $? != "0" ]; then
 else
 	pip install flask
 	pip install flask-restful
+	pip install flask-cors
 	pip install sqlalchemy
 	pip install passlib
 	pip install voluptuous

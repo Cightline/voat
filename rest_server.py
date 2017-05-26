@@ -1,7 +1,7 @@
 
 from flask import Flask
 from flask_restful import  Api
-
+from flask_cors import CORS, cross_origin
 
 # API classes
 from voat_rest  import register
@@ -16,6 +16,7 @@ from voat_utils import config
 # Need a logger
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 app.config.update(config.get_config())
