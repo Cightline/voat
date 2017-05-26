@@ -1,4 +1,5 @@
 {
+    "debug":true,
     "SQLALCHEMY_DATABASE_URI":"sqlite:////etc/voat/db/voat.db",
     "min_length_username":4,
     "min_length_api_token":4,

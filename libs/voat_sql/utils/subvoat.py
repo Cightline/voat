@@ -2,8 +2,11 @@
 # These classes mainly deal with database interaction
 
 import datetime
+import json
 
 from voluptuous import Schema, Required, All, Length, MultipleInvalid
+
+import paho.mqtt.publish as publish
 
 from voat_sql.utils      import db
 from voat_utils.config   import get_config
@@ -81,19 +84,27 @@ class SubvoatUtils():
         elif not u_msg:
             return [False, 'user does not exist']
 
-
-
+        now = datetime.datetime.utcnow()
         new_post = self.create_post_object(title=title,
                                            body=body,
                                            user_id=u_msg.id,
-                                           creation_date=datetime.datetime.utcnow())
-
+                                           creation_date=now)
 
         subvoat.posts_collection.append(new_post)
 
         self.db.session.commit()
 
+
+        publish.single('posts', json.dumps({'title':title, 
+                                          'body': body,
+                                          'user_id':u_msg.id,
+                                          # NEED CREATION DATE HERE
+                                          }), 
+                                          hostname='localhost',
+                                          port=1883)
+
         return [True, 'post added']
+
         
     # Make one that orders by date, with a limit
     def get_posts(self, subvoat_name):
@@ -105,9 +116,18 @@ class SubvoatUtils():
         # probably want to limit this
         if subvoat:
             for post in subvoat.posts_collection:
+                # Need to convert the user_id to username
+                u_result, u_obj = self.user_utils.get_user_by_id(post.user_id)
+
+                if u_result == False:
+                    # LOG ERROR HERE
+                    # error message should be in u_obj
+                    continue 
+
                 posts.append({'title':post.title,
                               'body':post.body,
-                              'user_id':post.user_id,
+                              # FIX THIS
+                              'username':u_obj.username,
                               'creation_date':post.creation_date.isoformat()})
 
         return posts

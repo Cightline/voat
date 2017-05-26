@@ -1,12 +1,7 @@
 
-import json
-
 from flask import Flask
-from flask_restful import Resource, Api, reqparse
+from flask_restful import  Api
 
-from passlib.apps import custom_app_context as pwd_context
-
-from voat_sql.db_connect import Connect
 
 # API classes
 from voat_rest  import register
@@ -37,7 +32,7 @@ api.add_resource(utils.GetPublicKey,        '/get_public_key')
 
 # Debugging
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=config.get_config()['debug'])
          
         
 

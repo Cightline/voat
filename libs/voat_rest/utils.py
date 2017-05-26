@@ -14,3 +14,6 @@ class GetPublicKey(Resource):
 
         else:
             return {'error':'no public key'}
+
+
+

@@ -30,7 +30,12 @@ class UserUtils():
             return [False, '%s %s' % (e.msg, e.path)]
 
         return [True, self.db.session.query(self.classes.users).filter(self.classes.users.username == username).first()]
-    
+
+    def get_user_by_id(self, user_id):
+
+        # ADD SCHEMA TYPE INTEGER HERE
+        
+        return [True, self.db.session.query(self.classes.users).filter(self.classes.users.id == user_id).first()]
 
     def authenticate_by_password(self, username, password):
         result, user = self.get_user(username)
