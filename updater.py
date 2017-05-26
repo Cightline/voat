@@ -58,7 +58,7 @@ class UpdatePost(Resource):
 
 
 
-api.add_resource(UpdatePost, '/update_post')
+api.add_resource(UpdatePost, '/update_data')
 
 
 if __name__ == '__main__':
