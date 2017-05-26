@@ -59,6 +59,8 @@ sudo su voat -c "export FLASK_APP=/path/to/voat/rest_server.py; flask run --host
 - [ ] logging
 - [x] authentication
 - [x] registration 
+- [x] posting 
+- [x] creating subvoats 
 - [x] private/public key generation for server
 - [x] private/public key generation for user
 - [x] serving public key
