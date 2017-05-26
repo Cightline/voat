@@ -33,7 +33,7 @@ api.add_resource(utils.GetPublicKey,        '/get_public_key')
 
 # Debugging
 if __name__ == '__main__':
-    app.run(debug=config.get_config()['debug'])
+    app.run(host="0.0.0.0", port=8080, debug=config.get_config()['debug'])
          
         
 
