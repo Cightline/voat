@@ -11,3 +11,6 @@ def generate_key(bits):
     key = RSA.generate(bits, random_gen)
 
     return key
+
+
+
