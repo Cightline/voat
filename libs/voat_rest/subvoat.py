@@ -83,7 +83,6 @@ class ListSubvoats(Resource):
 
 class SubmitPost(Resource):
     def post(self):
-        
         server_utils  = ServerUtils()
         subvoat_utils = SubvoatUtils()
         config        = get_config()
