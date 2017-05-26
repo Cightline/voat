@@ -76,9 +76,11 @@ main functions (main logic really)
 
 ```voat/libs/voat_rest``` 
 
+
 schemas and database utilities (basically lower level stuff for the main functions) (I may reorganize this)
 
 ```voat/libs/voat_sql``` 
+
 
 utilities that aren't run from the main functions (I may reorganize this)
 
