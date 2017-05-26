@@ -13,6 +13,7 @@ You can install these with pip (python-pip on Arch Linux)
 * voluptuous
 * pycrypto
 * requests
+* pika
 
 
 # RUNNING:
