@@ -6,7 +6,7 @@ import json
 
 from voluptuous import Schema, Required, All, Length, MultipleInvalid
 
-import paho.mqtt.publish as publish
+import pika
 
 from voat_sql.utils      import db
 from voat_utils.config   import get_config
@@ -73,21 +73,20 @@ class SubvoatUtils():
 
         # We need to use the user.id  
     
-        u_result, u_msg = self.user_utils.get_user(username)
+        status, result = self.user_utils.get_user(username)
 
-        if not u_result:
-            return [False, u_msg]
+        if not status:
+            return [False, result]
 
        
         # Should this even be here?
-        # u_msg is the user object btw
-        elif not u_msg:
+        elif not result:
             return [False, 'user does not exist']
 
         now = datetime.datetime.utcnow()
         new_post = self.create_post_object(title=title,
                                            body=body,
-                                           user_id=u_msg.id,
+                                           user_id=result.id,
                                            creation_date=now)
 
         subvoat.posts_collection.append(new_post)
@@ -95,13 +94,15 @@ class SubvoatUtils():
         self.db.session.commit()
 
 
-        publish.single('posts', json.dumps({'title':title, 
-                                          'body': body,
-                                          'user_id':u_msg.id,
-                                          # NEED CREATION DATE HERE
-                                          }), 
-                                          hostname='localhost',
-                                          port=1883)
+        # JUST TESTING, FIX THIS
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+
+        channel = connection.channel()
+
+        channel.queue_declare(queue='post')
+        channel.basic_publish(exchange='', routing_key='post', body=json.dumps({'title':title, 'body':body, 'user_id':result.id}))
+
+        connection.close()
 
         return [True, 'post added']
 
