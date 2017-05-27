@@ -24,17 +24,9 @@ The following need to be installed
 on the first run only
 
 ```
-mkdir /etc/voat
-mkdir /etc/voat/db
-mkdir /etc/voat/config
-useradd voat
-chown -R voat:voat /etc/voat
-chmod -R 775 /etc/voat
+sudo bash install.sh
 ```
 
-## link the config
-
-```sudo su voat -c "ln -s /voat/config/config.json /etc/voat/config/config.json"```
 
 
 ## on the first run (or after changes to voat/libs )  
