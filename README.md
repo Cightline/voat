@@ -13,6 +13,11 @@ You can install these with pip (python-pip on Arch Linux)
 * voluptuous
 * pycrypto
 * requests
+* celery[redis]
+
+The following need to be installed
+* redis (pacman -S redis)
+
 
 
 # RUNNING:
@@ -45,6 +50,22 @@ sudo su voat -c "python tools/create_db.py"
 
 
 ## to start the server
+
+As of now you have to run the following:
+
+```
+# ensure redis is running (systemctl start redis)
+bash start_rest_server
+bash start_celery_workers
+bash start_listener 
+```
+
+The listener listens for new incoming posts and stores them in the database (not complete).
+
+The celery workers make certain functions asynchronous
+
+
+
 
 ```sudo su voat -c "python rest_server.py"```
 

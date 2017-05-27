@@ -3,13 +3,16 @@
 
 import datetime
 import json
+import uuid
+
+
+import requests
 
 from voluptuous import Schema, Required, All, Length, MultipleInvalid
 
-import pika
-
 from voat_sql.utils      import db
 from voat_utils.config   import get_config
+from voat_utils.updater  import send_thread
 from voat_sql.utils.user import UserUtils
 
 
@@ -26,9 +29,11 @@ class SubvoatUtils():
     def create_subvoat_object(self, **kwargs):
         return self.classes.subvoat(**kwargs)
 
-    def create_post_object(self, **kwargs):
-        return self.classes.posts(**kwargs)
-   
+
+    def create_thread_object(self, **kwargs):
+        return self.classes.thread(**kwargs)
+
+
     # Returns a user object 
     def get_subvoat(self, subvoat_name):
         return self.db.session.query(self.classes.subvoat).filter(self.classes.subvoat.name == subvoat_name).first()
@@ -47,12 +52,12 @@ class SubvoatUtils():
 
 
     # Returns [result, message]
-    def add_post(self, subvoat_name, title, body, username):
+    def add_thread(self, subvoat_name, title, body, username):
 
         schema = Schema({ 
             Required('subvoat_name'): All(str, Length(min=self.config['min_length_subvoat_name'])),
-            Required('title'):        All(str, Length(min=self.config['min_length_post_title'])),
-            Required('body'):         All(str, Length(min=self.config['min_length_post_body'])),
+            Required('title'):        All(str, Length(min=self.config['min_length_thread_title'])),
+            Required('body'):         All(str, Length(min=self.config['min_length_thread_body'])),
             })
 
 
@@ -64,7 +69,6 @@ class SubvoatUtils():
         except MultipleInvalid as e:
             return [False, '%s %s' % (e.msg, e.path)]
 
-    
 
         subvoat = self.get_subvoat(subvoat_name)
 
@@ -84,51 +88,45 @@ class SubvoatUtils():
             return [False, 'user does not exist']
 
         now = datetime.datetime.utcnow()
-        new_post = self.create_post_object(title=title,
+        new_thread = self.create_thread_object(uuid=str(uuid.uuid4()),
+                                           title=title,
                                            body=body,
                                            user_id=result.id,
                                            creation_date=now)
 
-        subvoat.posts_collection.append(new_post)
+        subvoat.thread_collection.append(new_thread)
 
         self.db.session.commit()
 
 
-        # JUST TESTING, FIX THIS
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+        # JUST TESTING, FIX THIS (MAKE IT ASYNC, OTHERWISE IT WILL BLOCK)
 
-        channel = connection.channel()
+        send_thread.delay()
 
-        channel.queue_declare(queue='post')
-        channel.basic_publish(exchange='', routing_key='post', body=json.dumps({'title':title, 'body':body, 'user_id':result.id}))
-
-        connection.close()
-
-        return [True, 'post added']
+        return [True, 'thread added']
 
         
     # Make one that orders by date, with a limit
-    def get_posts(self, subvoat_name):
-        posts = []
+    def get_threads(self, subvoat_name):
+        threads = []
         subvoat =  self.db.session.query(self.classes.subvoat).filter(self.classes.subvoat.name == subvoat_name).first()
 
-        #print(dir(subvoat.posts_collection))
 
         # probably want to limit this
         if subvoat:
-            for post in subvoat.posts_collection:
+            for thread in subvoat.thread_collection:
                 # Need to convert the user_id to username
-                u_result, u_obj = self.user_utils.get_user_by_id(post.user_id)
+                u_result, u_obj = self.user_utils.get_user_by_id(thread.user_id)
 
                 if u_result == False:
                     # LOG ERROR HERE
                     # error message should be in u_obj
                     continue 
 
-                posts.append({'title':post.title,
-                              'body':post.body,
+                threads.append({'title':thread.title,
+                              'body':thread.body,
                               # FIX THIS
                               'username':u_obj.username,
-                              'creation_date':post.creation_date.isoformat()})
+                              'creation_date':thread.creation_date.isoformat()})
 
-        return posts
+        return threads

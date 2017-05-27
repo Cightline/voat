@@ -48,15 +48,15 @@ def test_posting():
     body  = ''.join(random.choices(string.ascii_letters, k=100))
     title = ''.join(random.choices(string.ascii_letters, k=10))
 
-    print(requests.post('%s/submit_post' % (base_address), {'username':'test_username', 
+    print(requests.post('%s/submit_thread' % (base_address), {'username':'test_username', 
                                                             'api_token':api_token, 
                                                             'subvoat_name':'test_exists',
                                                             'title':title,
                                                             'body':body}).json())
 
-def test_listing_posts():
+def test_listing_threads():
 
-    print(requests.post('%s/get_posts' % (base_address), {'subvoat_name':'test_exists'}).json())
+    print(requests.post('%s/get_threads' % (base_address), {'subvoat_name':'test_exists'}).json())
    
 
 if __name__ == '__main__':
@@ -81,6 +81,6 @@ if __name__ == '__main__':
     test_posting()
     print('\n')
 
-    print('LISTING POSTS')
-    test_listing_posts()
+    print('LISTING THREADS')
+    test_listing_threads()
     print('\n')

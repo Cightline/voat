@@ -7,18 +7,20 @@ from voat_sql import *
 class SubVoat(Base):
     __tablename__ = 'subvoat'
 
+
     id            = Column(Integer, primary_key=True)
     name          = Column(String(200), unique=True, nullable=False)
-    posts         = relationship('Post', backref=backref('posts', lazy='noload'))
+    threads       = relationship('Thread', backref=backref('thread', lazy='noload'))
     owner_id      = Column(Integer)
     creator_id    = Column(Integer)
     creation_date = Column(DateTime)
 
 
-class Post(Base):
-    __tablename__ = 'posts'
+class Thread(Base):
+    __tablename__ = 'thread'
     
-    id            = Column(Integer, primary_key=True)
+    # NEED A CUSTOM COLUMN TYPE FOR UUIDs
+    uuid          = Column(String(200), primary_key=True)
     value         = Column(String(200))
     title         = Column(String(200))
     body          = Column(String(200))

@@ -26,8 +26,8 @@ api.add_resource(authenticate.Authenticate, '/authenticate')
 api.add_resource(register.Register,         '/register')
 api.add_resource(subvoat.AddSubvoat,        '/create_subvoat')
 api.add_resource(subvoat.ListSubvoats,      '/list_subvoats')
-api.add_resource(subvoat.GetPosts,          '/get_posts')
-api.add_resource(subvoat.SubmitPost,        '/submit_post')
+api.add_resource(subvoat.GetThreads,        '/get_threads')
+api.add_resource(subvoat.SubmitThread,      '/submit_thread')
 api.add_resource(utils.GetPublicKey,        '/get_public_key')
 
 
