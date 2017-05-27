@@ -18,7 +18,7 @@ mkdir -pv $VOAT_DIR/config
 
 echo
 echo "Creating link to config $SRC_DIR/config/config.json -> $VOAT_DIR/config/config.json"
-ln -sv $SRC_DIR/config/config.json $VOAT_DIR/config/config.json
+ln -svf $SRC_DIR/config/config.json $VOAT_DIR/config/config.json
 
 echo
 echo "Adding voat user and setting permissions for $VOAT_DIR"
@@ -46,6 +46,7 @@ if [ $? != "0" ]; then
 else
 	pip install flask
 	pip install flask-restful
+	pip install flask-cors
 	pip install sqlalchemy
 	pip install passlib
 	pip install voluptuous
