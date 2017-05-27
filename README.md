@@ -21,23 +21,10 @@ The following need to be installed
 
 
 # RUNNING:
-on the first run only
+on the first run only (or after a `git pull`)
 
 ```
 sudo bash install.sh
-```
-
-
-
-## on the first run (or after changes to voat/libs )  
-
-```cd /where/ever/voat/libs
-sudo python setup.py install
-```
-
-## if you make changes to the database schemas, run this to recreate it. 
-```
-sudo su voat -c "python tools/create_db.py"
 ```
 
 
@@ -71,6 +58,7 @@ sudo su voat -c "export FLASK_APP=/path/to/voat/rest_server.py; flask run --host
 # TODO:
 
 - [ ] logging
+- [ ] admin stuff
 - [x] authentication
 - [x] registration 
 - [x] posting 
