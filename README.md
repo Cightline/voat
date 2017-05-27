@@ -44,17 +44,6 @@ The listener listens for new incoming posts and stores them in the database (not
 The celery workers make certain functions asynchronous
 
 
-
-
-```sudo su voat -c "python rest_server.py"```
-
-## if you would like to run 2 instances on the same machine
-
-``` 
-sudo su voat -c "export FLASK_APP=/path/to/voat/rest_server.py; flask run --host 0.0.0.0 --port [whatever_port]"
-```
-
-
 # TODO:
 
 - [ ] logging
