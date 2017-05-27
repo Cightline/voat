@@ -54,7 +54,7 @@ bash start_listener
 - [x] serving public key
 - [x] simple tool to update whitelisted servers 
 - [ ] verification of whitelisted server 
-- [ ] sharing posts/comments via MQTT 
+- [ ] sharing posts/comments 
 - [ ] searching posts/comments locally
 - [ ] searching posts/comments remotely
 
@@ -89,6 +89,7 @@ schemas and database utilities (basically lower level stuff for the main functio
 utilities that aren't run from the main functions (I may reorganize this)
 
 ```voat/libs/voat_utils```
+
 
 
 
