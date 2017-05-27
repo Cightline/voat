@@ -39,9 +39,6 @@ bash start_celery_workers
 bash start_listener 
 ```
 
-The listener listens for new incoming posts and stores them in the database (not complete).
-
-The celery workers make certain functions asynchronous
 
 
 # TODO:
@@ -94,5 +91,10 @@ utilities that aren't run from the main functions (I may reorganize this)
 ```voat/libs/voat_utils```
 
 
+
+
+The listener listens for new incoming posts and stores them in the database (not complete).
+
+The celery workers make certain functions asynchronous
 
 
