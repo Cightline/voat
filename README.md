@@ -54,7 +54,7 @@ I need people to go through and check/reorganize things.
 
 # NOTES:
 
-Users will have a "home" server or "primary provider". This server can be run locally, or by someone else. It's just the server that the user registered to. Users can register the same name on different providers, however the public keys will be different. The "primary provider" will whitelist servers it wants to communicate with. Each server will have a public/private keypair. The primary provider will listen for posts coming from other servers. It will display these messages to the user. If the user needs to search something, the primary provider can look locally or from other servers. All messages are signed by the user (automaticlally by the primary provider). Users will have to midly trust the primary provider, or host their own instance. 
+Users will have a "home" server or "primary provider". This server can be run locally, or by someone else. It's just the server that the user registered to. Users can register the same name on different providers, however the public keys will be different. The "primary provider" will whitelist servers it wants to communicate with. Each server will have a public/private keypair. The primary provider will listen for posts coming from other servers. It will display these messages to the user. If the user needs to search something, the primary provider can look locally or from other servers. All messages are signed by the server. Users will have to midly trust the primary provider, or host their own instance. 
 
 This will probably use PyPy or uWSGI. (https://pypy.org/) (https://uwsgi-docs.readthedocs.io/en/latest/)
 
