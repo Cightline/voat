@@ -63,8 +63,6 @@ This will probably use PyPy or uWSGI. (https://pypy.org/) (https://uwsgi-docs.re
 
 READ THROUGH THIS: https://guides.github.com/introduction/flow/
 
-As of now, Voat runs from whatever directory you cloned it to. Eventually it will be moved to the proper directory. The config and database are stored in `/etc/voat`. For the moment I'm using Sqlite, and the config should be symlinked. 
-
 
 main functions (main logic really)
 
