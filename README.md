@@ -20,14 +20,6 @@ You can install these with pip (python-pip on Arch Linux)
 The following need to be installed
 * redis (pacman -S redis)
 
-# Installation
-make sure you have install python3 python3-pip and redis
-```
-chmod +x install.sh
-sudo ./install.sh 
-```
-
-# RUNNING:
 
 ## to start the server
 Ensure Redis is running:
@@ -38,25 +30,11 @@ Start the server:
 
 This starts the REST server, Celery workers and listeners.
 
-The listener listens for new incoming posts and stores them in the database (not complete).
-
-The celery workers make certain functions asynchronous
-
-
-## to stop the server
-`sudo voat stop`
-
-
-## if you would like to run 2 instances on the same machine
-
-``` 
-sudo su voat -c "export FLASK_APP=/path/to/voat/rest_server.py; flask run --host 0.0.0.0 --port [whatever_port]"
-```
-
 
 # TODO:
 
 - [ ] logging
+- [ ] admin stuff
 - [x] authentication
 - [x] registration 
 - [x] posting 
@@ -66,7 +44,7 @@ sudo su voat -c "export FLASK_APP=/path/to/voat/rest_server.py; flask run --host
 - [x] serving public key
 - [x] simple tool to update whitelisted servers 
 - [ ] verification of whitelisted server 
-- [ ] sharing posts/comments via MQTT 
+- [ ] sharing posts/comments 
 - [ ] searching posts/comments locally
 - [ ] searching posts/comments remotely
 
@@ -103,5 +81,11 @@ utilities that aren't run from the main functions (I may reorganize this)
 ```voat/libs/voat_utils```
 
 
+
+
+
+The listener listens for new incoming posts and stores them in the database (not complete).
+
+The celery workers make certain functions asynchronous
 
 
