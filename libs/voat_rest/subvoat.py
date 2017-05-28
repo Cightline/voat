@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from flask_restful import Resource, reqparse
 
@@ -25,7 +26,7 @@ class AddSubvoat(Resource):
 
 
         # authenticate first
-        user = user_utils.authenticate_by_token(args['username'], args['api_token'])
+        user = user_utils.authenticate_by_token(args.get('username'), args.get('api_token'))
     
     
         if not user:
@@ -45,12 +46,12 @@ class AddSubvoat(Resource):
 
     
         # See if the subvoat exists
-        if subvoat_utils.get_subvoat(args['subvoat_name']):
+        if subvoat_utils.get_subvoat(args.get('subvoat_name')):
             return {'error':'subvoat already exists'}
 
     
         # If not create it (should probably add some rate-limiting or something around here)
-        new_subvoat = subvoat_utils.create_subvoat_object(name=args['subvoat_name'],
+        new_subvoat = subvoat_utils.create_subvoat_object(name=args.get('subvoat_name'),
                                                           owner_id=user.id,
                                                           creator_id=user.id,
                                                           creation_date=datetime.datetime.utcnow())
@@ -114,13 +115,13 @@ class GetThreads(Resource):
     def post(self):  
         config        = get_config()
         subvoat_utils = SubvoatUtils()
+        user_utils    = UserUtils()
         parser        = reqparse.RequestParser()
         return_data   = []
 
         parser.add_argument('subvoat_name')
 
-        args = parser.parse_args()
-
+        args   = parser.parse_args()
         schema = Schema({ Required('subvoat_name'): All(str, Length(min=config['min_length_subvoat_name']))})
 
         try:
@@ -129,15 +130,125 @@ class GetThreads(Resource):
         except MultipleInvalid as e:
             return {'error':'%s %s' % (e.msg, e.path)}
 
-        threads = subvoat_utils.get_threads(args['subvoat_name'])
-
         
-        for p in threads:
-            return_data.append(p)
+        threads = subvoat_utils.get_all_threads(args['subvoat_name'])
+
+       
+        # see the thread schema in voat_sql/schemas/subvoat_schema.py
+        # I convert the user_id to username
+        for t in threads:
+            user_status, user_result = user_utils.get_user_by_id(t.user_id)
+
+            if user_status:
+                username = user_result.username
+
+            else:
+                # NEED TO LOG THIS
+                continue
+
+            return_data.append({'uuid':t.uuid, 
+                                'title':t.title,
+                                'body':t.body,
+                                'username':username,
+                                'creation_date':t.creation_date.isoformat()})
 
         
         return {'result':return_data}
+    
 
 class GetComments(Resource):
-    pass
+    def post(self):
+        subvoat_utils = SubvoatUtils()
+        user_utils    = UserUtils()
+        parser = reqparse.RequestParser()
 
+        parser.add_argument('thread_uuid')
+
+        args        = parser.parse_args()
+        return_data = []
+    
+        # check UUID length
+        schema = Schema({ Required('thread_uuid'): All(str, Length(min=36))})
+    
+        try:
+            schema({'thread_uuid':args.get('thread_uuid')})
+
+        except MultipleInvalid as e:
+            return {'error':'%s %s' % (e.msg, e.path)}
+
+
+        comments = subvoat_utils.get_comments(args.get('thread_uuid'))
+
+        # append the data to a list and return it. Also change the user_id to username.
+        for comment in comments:
+            u_status, u_result = user_utils.get_user_by_id(comment.user_id)
+    
+            
+            if not u_status:
+                # NEED TO LOG THIS 
+                continue 
+
+            return_data.append({'uuid':comment.uuid, 
+                                'body':comment.body,
+                                'username':u_result.username,
+                                'creation_date':comment.creation_date.isoformat()})
+
+
+            
+    
+        return {'result':return_data}
+
+
+class SubmitComment(Resource):
+    def post(self):
+        config        = get_config()
+        parser        = reqparse.RequestParser()
+        user_utils    = UserUtils()
+        subvoat_utils = SubvoatUtils()
+
+        parser.add_argument('username')
+        parser.add_argument('api_token')
+        parser.add_argument('body')
+        parser.add_argument('thread_uuid')
+        parser.add_argument('reply_to_uuid')
+
+        args = parser.parse_args()
+
+        # Validation setup
+        uuid_schema = Schema({ Required('reply_to_uuid'): All(str, Length(min=36, max=36))})
+        schema      = Schema({ Required('body'):          All(str, Length(min=config['min_length_comment_body'], 
+                                                                          max=config['max_length_comment_body']))})
+
+
+        # Validation
+        try:
+            schema({'body':args.get('body')})
+
+            if args.get('reply_to_uuid'):
+                uuid_schema({'reply_to_uuid': args.get('reply_to_uuid')})
+
+        except MultipleInvalid as e:
+            return {'error':'%s %s' % (e.msg, e.path)}
+
+
+
+        user = user_utils.authenticate_by_token(args.get('username'), args.get('api_token'))
+
+        if not user:
+            return {'error':'incorrect login'}
+
+      
+        # See if we are replying to a comment
+        if args.get('reply_to_uuid'):
+            status, result = subvoat_utils.add_comment(thread_uuid=args.get('thread_uuid'),     
+                                                       reply_uuid=args.get('reply_to_uuid'),
+                                                       body=args.get('body'), 
+                                                       user_obj=user)
+
+        else:
+            status, result = subvoat_utils.add_comment(thread_uuid=args.get('thread_uuid'), 
+                                                       body=args.get('body'), 
+                                                       user_obj=user)
+
+        if status == True:
+            return {'result':'comment added'}

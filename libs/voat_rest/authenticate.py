@@ -15,7 +15,7 @@ class Authenticate(Resource):
         args = parser.parse_args()
 
 
-        result, user = user_utils.authenticate_by_password(args['username'], args['password'])
+        result, user = user_utils.authenticate_by_password(args.get('username'), args.get('password'))
 
         if result == False:
             return {'error':'incorrect login'}

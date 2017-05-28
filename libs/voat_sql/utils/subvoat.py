@@ -33,11 +33,17 @@ class SubvoatUtils():
     def create_thread_object(self, **kwargs):
         return self.classes.thread(**kwargs)
 
+    def create_comment_object(self, **kwargs):
+        return self.classes.comment(**kwargs)
+
 
     # Returns a user object 
     def get_subvoat(self, subvoat_name):
         return self.db.session.query(self.classes.subvoat).filter(self.classes.subvoat.name == subvoat_name).first()
-   
+ 
+    def get_comments(self, thread_uuid):
+        return self.db.session.query(self.classes.thread).filter(self.classes.thread.uuid == thread_uuid).first().comment_collection
+
 
     def get_all_subvoats(self):
         return self.db.session.query(self.classes.subvoat).all()
@@ -49,6 +55,34 @@ class SubvoatUtils():
         result = self.db.session.commit()
 
         return result
+
+
+    def add_comment(self, thread_uuid, body, user_obj, reply_uuid=None):
+        
+        thread = self.get_thread_by_uuid(thread_uuid)
+
+        if not thread:
+            return [False, 'no such thread']
+
+        if reply_uuid:
+            new_comment = self.create_comment_object(body=body, 
+                                                 user_id=user_obj.id, 
+                                                 uuid=str(uuid.uuid4()), 
+                                                 creation_date=datetime.datetime.utcnow(),
+                                                 reply_uuid=reply_uuid)
+
+        else:
+            new_comment = self.create_comment_object(body=body, 
+                                                 user_id=user_obj.id, 
+                                                 uuid=str(uuid.uuid4()), 
+                                                 creation_date=datetime.datetime.utcnow())
+
+        thread.comment_collection.append(new_comment)
+
+        if not self.db.session.commit():
+            return [True, 'added']
+
+        return [False, 'unable to add comment']
 
 
     # Returns [result, message]
@@ -107,26 +141,31 @@ class SubvoatUtils():
 
         
     # Make one that orders by date, with a limit
-    def get_threads(self, subvoat_name):
+    def get_all_threads(self, subvoat_name):
         threads = []
         subvoat =  self.db.session.query(self.classes.subvoat).filter(self.classes.subvoat.name == subvoat_name).first()
 
 
         # probably want to limit this
-        if subvoat:
-            for thread in subvoat.thread_collection:
+        #if subvoat:
+        #    for thread in subvoat.thread_collection:
                 # Need to convert the user_id to username
-                u_result, u_obj = self.user_utils.get_user_by_id(thread.user_id)
+                #u_result, u_obj = self.user_utils.get_user_by_id(thread.user_id)
 
-                if u_result == False:
+                #f u_result == False:
                     # LOG ERROR HERE
                     # error message should be in u_obj
-                    continue 
+                #   continue 
 
-                threads.append({'title':thread.title,
-                              'body':thread.body,
-                              # FIX THIS
-                              'username':u_obj.username,
-                              'creation_date':thread.creation_date.isoformat()})
+            
+            
 
-        return threads
+        return subvoat.thread_collection
+
+    def get_thread_by_uuid(self, uuid):
+        thread = self.db.session.query(self.classes.thread).filter(self.classes.thread.uuid == uuid).first()
+
+
+        return thread
+
+

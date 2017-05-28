@@ -21,11 +21,20 @@ class Thread(Base):
     
     # NEED A CUSTOM COLUMN TYPE FOR UUIDs
     uuid          = Column(String(200), primary_key=True)
-    value         = Column(String(200))
     title         = Column(String(200))
     body          = Column(String(200))
     user_id       = Column(Integer)
     creation_date = Column(DateTime)
     subvoat_id    = Column(Integer, ForeignKey('subvoat.id'))
 
+
+class Comment(Base):
+    __tablename__ = 'comment'
+
+    uuid          = Column(String(200),  primary_key=True)
+    body          = Column(String(5000))
+    user_id       = Column(Integer)
+    creation_date = Column(DateTime)
+    thread_uuid   = Column(String, ForeignKey('thread.uuid'))
+    reply_uuid    = Column(String(200))
 

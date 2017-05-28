@@ -1,3 +1,6 @@
+import uuid
+import datetime
+
 from passlib.apps  import custom_app_context as pwd_context
 from voluptuous     import Schema, Required, All, Length, MultipleInvalid
 
@@ -17,6 +20,49 @@ class UserUtils():
     def create_user_object(self, **kwargs):
         return self.classes.users(**kwargs)
 
+    
+    def add_user(self, password, username):
+
+        schema = Schema({ Required('username'): All(str, Length(min=self.config['min_length_username'])),
+                          Required('password'): All(str, Length(min=self.config['min_length_password']))})
+
+
+        try:
+            schema({'username':username, 'password':password})
+
+        except MultipleInvalid as e:
+            return [False, '%s %s' % (e.msg, e.path)]
+
+        
+        u_status, u_result = self.get_user(username)
+
+        if not u_status:
+            return [False, u_result]
+
+        
+        elif u_status and u_result:
+            return [False, 'user already exists']
+
+
+        password_hash = pwd_context.encrypt(password)
+        api_token     = str(uuid.uuid4())
+
+        new_user = self.create_user_object(password_hash=password_hash, 
+                                           username=username, 
+                                           creation_time=datetime.datetime.utcnow(), 
+                                           api_token=api_token)
+
+        self.db.session.add(new_user)
+
+        status = self.db.session.commit()
+
+        # FIX: log this
+        if not status:
+            return [True, 'user created']
+
+        return [False, 'unable to create user']
+
+
    
     # Returns a list [result, data/object/error_message]
     def get_user(self, username):
@@ -30,6 +76,7 @@ class UserUtils():
             return [False, '%s %s' % (e.msg, e.path)]
 
         return [True, self.db.session.query(self.classes.users).filter(self.classes.users.username == username).first()]
+
 
     def get_user_by_id(self, user_id):
 

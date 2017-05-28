@@ -7,6 +7,7 @@ You can install these with pip (python-pip on Arch Linux)
 
 * flask-restful
 * flask
+* flask-cors
 * sqlalchemy
 * sqlalchemy_utils
 * passlib
@@ -14,31 +15,20 @@ You can install these with pip (python-pip on Arch Linux)
 * pycrypto
 * requests
 * celery[redis]
+* redis
 
 The following need to be installed
 * redis (pacman -S redis)
 
 
-
-# RUNNING:
-on the first run only (or after a `git pull`)
-
-```
-sudo bash install.sh
-```
-
-
 ## to start the server
+Ensure Redis is running:
+`sudo systemctl start redis`
 
-As of now you have to run the following:
+Start the server:
+`sudo voat start`
 
-```
-# ensure redis is running (systemctl start redis)
-bash start_rest_server
-bash start_celery_workers
-bash start_listener 
-```
-
+This starts the REST server, Celery workers and listeners.
 
 
 # TODO:
