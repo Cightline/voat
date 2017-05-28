@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from flask_restful import Resource, reqparse
 
@@ -114,13 +115,13 @@ class GetThreads(Resource):
     def post(self):  
         config        = get_config()
         subvoat_utils = SubvoatUtils()
+        user_utils    = UserUtils()
         parser        = reqparse.RequestParser()
         return_data   = []
 
         parser.add_argument('subvoat_name')
 
-        args = parser.parse_args()
-
+        args   = parser.parse_args()
         schema = Schema({ Required('subvoat_name'): All(str, Length(min=config['min_length_subvoat_name']))})
 
         try:
@@ -129,15 +130,109 @@ class GetThreads(Resource):
         except MultipleInvalid as e:
             return {'error':'%s %s' % (e.msg, e.path)}
 
-        threads = subvoat_utils.get_threads(args['subvoat_name'])
-
         
-        for p in threads:
-            return_data.append(p)
+        threads = subvoat_utils.get_all_threads(args['subvoat_name'])
+
+       
+        # see the thread schema in voat_sql/schemas/subvoat_schema.py
+        # I convert the user_id to username
+        for t in threads:
+            user_status, user_result = user_utils.get_user_by_id(t.user_id)
+
+            if user_status:
+                username = user_result.username
+
+            else:
+                # NEED TO LOG THIS
+                continue
+
+            return_data.append({'uuid':t.uuid, 
+                                'title':t.title,
+                                'body':t.body,
+                                'username':username,
+                                'creation_date':t.creation_date.isoformat()})
 
         
         return {'result':return_data}
 
 class GetComments(Resource):
-    pass
+    def post(self):
+        subvoat_utils = SubvoatUtils()
+        user_utils    = UserUtils()
+        parser = reqparse.RequestParser()
 
+        parser.add_argument('thread_uuid')
+
+        args        = parser.parse_args()
+        return_data = []
+    
+        # check UUID length
+        schema = Schema({ Required('thread_uuid'): All(str, Length(min=36))})
+    
+        try:
+            schema({'thread_uuid':args.get('thread_uuid')})
+
+        except MultipleInvalid as e:
+            return {'error':'%s %s' % (e.msg, e.path)}
+
+
+        comments = subvoat_utils.get_comments(args['thread_uuid'])
+
+        # append the data to a list and return it. Also change the user_id to username.
+        for comment in comments:
+            u_status, u_result = user_utils.get_user_by_id(comment.user_id)
+    
+            
+            if not u_status:
+                # NEED TO LOG THIS 
+                continue 
+
+            return_data.append({'uuid':comment.uuid, 
+                                'body':comment.body,
+                                'username':u_result.username,
+                                'creation_date':comment.creation_date.isoformat()})
+
+
+            
+    
+        return {'result':return_data}
+
+
+class SubmitComment(Resource):
+    def post(self):
+        config        = get_config()
+        parser        = reqparse.RequestParser()
+        user_utils    = UserUtils()
+        subvoat_utils = SubvoatUtils()
+
+        parser.add_argument('username')
+        parser.add_argument('api_token')
+        parser.add_argument('body')
+        parser.add_argument('thread_uuid')
+        parser.add_argument('reply_to')
+
+        args = parser.parse_args()
+
+        #FIX: NEED TO ADD MAX LENGTH OF COMMENT_BODY
+        schema = Schema({ Required('body'):      All(str, Length(min=config['min_length_comment_body']))})
+
+        try:
+            schema({'body':args.get('body')})
+
+        except MultipleInvalid as e:
+            return {'error':'%s %s' % (e.msg, e.path)}
+
+        
+
+        user = user_utils.authenticate_by_token(args['username'], args['api_token'])
+
+        if not user:
+            return {'error':'incorrect login'}
+
+        # Get the thread we are posting to 
+        # FIX: validate this with schema
+        
+        status, result = subvoat_utils.add_comment(args['thread_uuid'], args['body'], user)
+
+        if status == True:
+            return {'result':'comment added'}

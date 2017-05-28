@@ -4,7 +4,6 @@ import string
 
 base_address = 'http://localhost:5000'
 
-
 def get_api_token():
     result = requests.post('%s/authenticate' % (base_address), {'username':'test_username', 'password':'test_password'}).json()['result']
     
@@ -56,8 +55,28 @@ def test_posting():
 
 def test_listing_threads():
 
-    print(requests.post('%s/get_threads' % (base_address), {'subvoat_name':'test_exists'}).json())
+    data = requests.post('%s/get_threads' % (base_address), {'subvoat_name':'test_exists'}).json()
+
+    print(data)
+
+    thread_uuid = data['result'][0]['uuid']
    
+    print(requests.post('%s/get_comments' % (base_address), {'thread_uuid':thread_uuid}).json())
+
+
+def test_posting_comment():
+    api_token = get_api_token()
+    body  = ''.join(random.choices(string.ascii_letters, k=100))
+
+    data = requests.post('%s/get_threads' % (base_address), {'subvoat_name':'test_exists'}).json()
+
+    thread_uuid = data['result'][0]['uuid']
+
+    print(requests.post('%s/submit_comment' % (base_address), {'thread_uuid':thread_uuid, 
+                                                              'username':'test_username', 
+                                                              'api_token':api_token,
+                                                              'body':body}).text)
+                                                            
 
 if __name__ == '__main__':
     print('TESTING REGISTRATION')
@@ -81,6 +100,10 @@ if __name__ == '__main__':
     test_posting()
     print('\n')
 
-    print('LISTING THREADS')
+    print('LISTING THREADS AND COMMENTS')
     test_listing_threads()
+    print('\n')
+
+    print('POSTING COMMENT')
+    test_posting_comment()
     print('\n')
