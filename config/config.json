@@ -9,6 +9,7 @@
     "min_length_comment_body":4,
     "min_length_username":4,
     "min_length_password":4,
+    "max_length_comment_body":5000,
     "server_key_bits":1024,
     "broker":"redis://localhost:6379",
     "result_backend":"redis://localhost:6379",

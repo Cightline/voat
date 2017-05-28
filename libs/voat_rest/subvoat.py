@@ -26,7 +26,7 @@ class AddSubvoat(Resource):
 
 
         # authenticate first
-        user = user_utils.authenticate_by_token(args['username'], args['api_token'])
+        user = user_utils.authenticate_by_token(args.get('username'), args.get('api_token'))
     
     
         if not user:
@@ -46,12 +46,12 @@ class AddSubvoat(Resource):
 
     
         # See if the subvoat exists
-        if subvoat_utils.get_subvoat(args['subvoat_name']):
+        if subvoat_utils.get_subvoat(args.get('subvoat_name')):
             return {'error':'subvoat already exists'}
 
     
         # If not create it (should probably add some rate-limiting or something around here)
-        new_subvoat = subvoat_utils.create_subvoat_object(name=args['subvoat_name'],
+        new_subvoat = subvoat_utils.create_subvoat_object(name=args.get('subvoat_name'),
                                                           owner_id=user.id,
                                                           creator_id=user.id,
                                                           creation_date=datetime.datetime.utcnow())
@@ -154,6 +154,7 @@ class GetThreads(Resource):
 
         
         return {'result':return_data}
+    
 
 class GetComments(Resource):
     def post(self):
@@ -176,7 +177,7 @@ class GetComments(Resource):
             return {'error':'%s %s' % (e.msg, e.path)}
 
 
-        comments = subvoat_utils.get_comments(args['thread_uuid'])
+        comments = subvoat_utils.get_comments(args.get('thread_uuid'))
 
         # append the data to a list and return it. Also change the user_id to username.
         for comment in comments:
@@ -209,30 +210,45 @@ class SubmitComment(Resource):
         parser.add_argument('api_token')
         parser.add_argument('body')
         parser.add_argument('thread_uuid')
-        parser.add_argument('reply_to')
+        parser.add_argument('reply_to_uuid')
 
         args = parser.parse_args()
 
-        #FIX: NEED TO ADD MAX LENGTH OF COMMENT_BODY
-        schema = Schema({ Required('body'):      All(str, Length(min=config['min_length_comment_body']))})
+        # Validation setup
+        uuid_schema = Schema({ Required('reply_to_uuid'): All(str, Length(min=36, max=36))})
+        schema      = Schema({ Required('body'):          All(str, Length(min=config['min_length_comment_body'], 
+                                                                          max=config['max_length_comment_body']))})
 
+
+        # Validation
         try:
             schema({'body':args.get('body')})
+
+            if args.get('reply_to_uuid'):
+                uuid_schema({'reply_to_uuid': args.get('reply_to_uuid')})
 
         except MultipleInvalid as e:
             return {'error':'%s %s' % (e.msg, e.path)}
 
-        
 
-        user = user_utils.authenticate_by_token(args['username'], args['api_token'])
+
+        user = user_utils.authenticate_by_token(args.get('username'), args.get('api_token'))
 
         if not user:
             return {'error':'incorrect login'}
 
-        # Get the thread we are posting to 
-        # FIX: validate this with schema
-        
-        status, result = subvoat_utils.add_comment(args['thread_uuid'], args['body'], user)
+      
+        # See if we are replying to a comment
+        if args.get('reply_to_uuid'):
+            status, result = subvoat_utils.add_comment(thread_uuid=args.get('thread_uuid'),     
+                                                       reply_uuid=args.get('reply_to_uuid'),
+                                                       body=args.get('body'), 
+                                                       user_obj=user)
+
+        else:
+            status, result = subvoat_utils.add_comment(thread_uuid=args.get('thread_uuid'), 
+                                                       body=args.get('body'), 
+                                                       user_obj=user)
 
         if status == True:
             return {'result':'comment added'}

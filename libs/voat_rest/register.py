@@ -24,22 +24,8 @@ class Register(Resource):
 
         args = parser.parse_args()
 
-        #schema = Schema({
-        #    Required('username
     
-        # FIX: make this into a schema
-        if 'username' not in args:
-            return {'error':'no username given'}
-
-        elif 'password' not in args:
-            return {'error':'no password given'}
-
-        elif args['password'] == None or args['password'] == '':
-            return {'error':'password has no length'}
-
-
-    
-        status, result = user_utils.add_user(password=args['password'], username=args['username'])
+        status, result = user_utils.add_user(password=args.get('password'), username=args.get('username'))
 
         if status == True:
             return {'success': result}

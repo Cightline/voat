@@ -36,4 +36,5 @@ class Comment(Base):
     user_id       = Column(Integer)
     creation_date = Column(DateTime)
     thread_uuid   = Column(String, ForeignKey('thread.uuid'))
+    reply_uuid    = Column(String(200))
 

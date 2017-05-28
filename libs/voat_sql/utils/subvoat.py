@@ -57,15 +57,22 @@ class SubvoatUtils():
         return result
 
 
-    def add_comment(self, thread_uuid, body, user_obj):
+    def add_comment(self, thread_uuid, body, user_obj, reply_uuid=None):
         
         thread = self.get_thread_by_uuid(thread_uuid)
 
         if not thread:
             return [False, 'no such thread']
 
-        
-        new_comment = self.create_comment_object(body=body, 
+        if reply_uuid:
+            new_comment = self.create_comment_object(body=body, 
+                                                 user_id=user_obj.id, 
+                                                 uuid=str(uuid.uuid4()), 
+                                                 creation_date=datetime.datetime.utcnow(),
+                                                 reply_uuid=reply_uuid)
+
+        else:
+            new_comment = self.create_comment_object(body=body, 
                                                  user_id=user_obj.id, 
                                                  uuid=str(uuid.uuid4()), 
                                                  creation_date=datetime.datetime.utcnow())
