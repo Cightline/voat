@@ -14,7 +14,7 @@ def update_server_key():
     key = generate_key(config['server_key_bits'])
 
     if os.path.exists('/etc/voat/config/public_key') or os.path.exists('/etc/voat/config/private_key'):
-        confirm = input('Keys are already in /etc/voat/config/ , generate new ones anyways? [y/n]: ').lower().strip()
+        confirm = input('Keys are already in /etc/voat/config/ , generate new ones anyway? [y/n]: ').lower().strip()
 
         if confirm != 'y' and confirm != 'yes':
             exit()

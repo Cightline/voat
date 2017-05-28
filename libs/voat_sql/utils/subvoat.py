@@ -59,19 +59,24 @@ class SubvoatUtils():
 
     def add_comment(self, thread_uuid, body, user_obj):
         
-        #FIX: check to ensure thread exists 
         thread = self.get_thread_by_uuid(thread_uuid)
 
-        new_comment = self.create_comment_object(body=body, user_id=user_obj.id, uuid=str(uuid.uuid4()), creation_date=datetime.datetime.utcnow())
+        if not thread:
+            return [False, 'no such thread']
 
+        
+        new_comment = self.create_comment_object(body=body, 
+                                                 user_id=user_obj.id, 
+                                                 uuid=str(uuid.uuid4()), 
+                                                 creation_date=datetime.datetime.utcnow())
 
         thread.comment_collection.append(new_comment)
 
-        self.db.session.commit()
+        if not self.db.session.commit():
+            return [True, 'added']
 
-        
-        # FIX: return the correct status and result
-        return [True, 'added']
+        return [False, 'unable to add comment']
+
 
     # Returns [result, message]
     def add_thread(self, subvoat_name, title, body, username):

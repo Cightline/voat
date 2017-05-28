@@ -10,7 +10,9 @@ def get_api_token():
     return result['api_token']
 
 def test_registration():
-    result = requests.post('%s/register' % (base_address), {'username':'test_username', 'password':'test_password'})
+    result = requests.post('%s/register' % (base_address), {'username':'test_username', 'password':'test_password'}).json()
+
+    print(result)
 
 
 # test subvoat creation
