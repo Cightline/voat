@@ -35,12 +35,12 @@ This starts the REST server, Celery workers and listeners.
 
 - [ ] logging
 - [ ] admin stuff
+- [x] comments
 - [x] authentication
 - [x] registration 
 - [x] posting 
 - [x] creating subvoats 
 - [x] private/public key generation for server
-- [x] private/public key generation for user
 - [x] serving public key
 - [x] simple tool to update whitelisted servers 
 - [ ] verification of whitelisted server 
