@@ -18,14 +18,13 @@ mkdir -pv $VOAT_DIR/config
 
 echo
 echo "Creating link to config $SRC_DIR/config/config.json -> $VOAT_DIR/config/config.json"
-ln -sv $SRC_DIR/config/config.json $VOAT_DIR/config/config.json
+ln -svf $SRC_DIR/config/config.json $VOAT_DIR/config/config.json
 
 echo
 echo "Adding voat user and setting permissions for $VOAT_DIR"
 useradd voat
-chown -R voat:voat /etc/voat
-chmod -R 775 /etc/voat
-chmod -R 775 $
+chown -R voat:voat $VOAT_DIR
+chmod -R 775 $VOAT_DIR
 echo
 echo "Checking for python3..."
 PYTHON_VERSION=$(echo $(python3 -c 'import sys; print(sys.version_info[:])') | cut -d',' -f1 | sed -e "s/(//g")
@@ -46,12 +45,15 @@ if [ $? != "0" ]; then
 else
 	pip install flask
 	pip install flask-restful
+	pip install flask-cors
 	pip install sqlalchemy
 	pip install passlib
 	pip install voluptuous
 	pip install pycrypto
 	pip install sqlalchemy_utils
 	pip install requests
+	pip install celery
+	pip install redis
 fi
 
 echo
@@ -69,4 +71,4 @@ cp -f bin/voat /usr/bin/voat
 sed -i "s@src-dir@$SRC_DIR@" /usr/bin/voat
 chmod +x /usr/bin/voat
 
-voat start
+voat restart
