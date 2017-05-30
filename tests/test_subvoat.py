@@ -84,6 +84,8 @@ def test_posting_comment():
                                                               'body':body}).text)
     
 def test_vote_thread():
+    # this needs to try directions that exceed -1 or 1 (ie 5 or something)
+    # this should also test incorrect API tokens
     api_token = get_api_token()
 
     thread_data = requests.post('%s/get_threads' % (base_address), {'subvoat_name':'test_exists'}).json()

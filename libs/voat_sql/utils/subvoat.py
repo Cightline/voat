@@ -208,13 +208,13 @@ class SubvoatUtils():
 
 
         # If the vote is the same
-        if q.direction == int(direction):
+        if q.vote.direction == int(direction):
             return [True, 'vote unchanged']
 
         # Otherwise update the vote direction 
         else:
-            q.direction = int(direction)
-            self.db.session.add(q)
+            q.vote.direction = int(direction)
+            self.db.session.add(q.vote)
 
             if not self.db.session.commit():
                 return [True, 'vote changed']
