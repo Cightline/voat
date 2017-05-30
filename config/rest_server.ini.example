@@ -1,3 +1,5 @@
+; sudo uwsgi --ini config/rest_server.ini
+
 [uwsgi]
 
 chdir = /home/stealth/programming/voat
