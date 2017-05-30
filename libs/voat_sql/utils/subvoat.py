@@ -168,12 +168,16 @@ class SubvoatUtils():
 
         return thread
 
+    def get_comment_by_uuid(self, uuid):
+        comment = self.db.session.query(self.classes.comment).filter(self.classes.comment.uuid == uuid).first()
+
+        return comment
+
     
     def vote_thread(self, thread_uuid, direction, user_id):
 
         schema = Schema({ Required('direction'):   All(int, Range(min=-1, max=1)),
-                          Required('thread_uuid'): All(str, Length(min=36, max=36)),
-            })
+                          Required('thread_uuid'): All(str, Length(min=36, max=36)) })
 
         try:
             schema({'direction':direction, 'thread_uuid':thread_uuid})
@@ -190,14 +194,14 @@ class SubvoatUtils():
         # see if the user already voted, if so change the vote direction if its different 
         sq = self.db.session.query(self.classes.thread).filter(self.classes.thread.uuid == thread_uuid).subquery()
         
-        q  = self.db.session.query(self.classes.vote, sq).filter(self.classes.vote.user_id == user_id).first()
+        q  = self.db.session.query(self.classes.thread_vote, sq).filter(self.classes.thread_vote.user_id == user_id).first()
 
     
         # if the vote doesn't exist, create it and commit it
         if not q:
-            new_vote = self.classes.vote(user_id=user_id, direction=direction)
+            new_vote = self.classes.thread_vote(user_id=user_id, direction=direction)
 
-            thread.vote_collection.append(new_vote)
+            thread.thread_vote_collection.append(new_vote)
 
             self.db.session.add(thread)
 
@@ -208,12 +212,12 @@ class SubvoatUtils():
 
 
         # If the vote is the same
-        if q.vote.direction == int(direction):
+        if q.thread_vote.direction == int(direction):
             return [True, 'vote unchanged']
 
         # Otherwise update the vote direction 
         else:
-            q.vote.direction = int(direction)
+            q.thread_vote.direction = int(direction)
             self.db.session.add(q.vote)
 
             if not self.db.session.commit():
@@ -222,3 +226,54 @@ class SubvoatUtils():
             return [False, 'unable to commit vote change'] 
 
 
+    def vote_comment(self, comment_uuid, direction, user_id):
+
+        schema = Schema({ Required('direction'):   All(int, Range(min=-1, max=1)),
+                          Required('comment_uuid'): All(str, Length(min=36, max=36)) })
+
+
+        try:
+            schema({'direction':direction, 'comment_uuid':comment_uuid})
+
+        except MultipleInvalid as e:
+            return [False, '%s %s' % (e.msg, e.path)]
+
+    
+        # FIX: calling comment 2x (sq = )
+        comment = self.get_comment_by_uuid(comment_uuid)
+
+        if not comment:
+            return [False, 'no such comment']
+
+
+        # get the comments
+        sq = self.db.session.query(self.classes.comment).filter(self.classes.comment.uuid == comment_uuid).subquery()
+
+        q  = self.db.session.query(self.classes.comment_vote, sq).filter(self.classes.comment_vote.user_id == user_id).first()
+
+        
+        if not q:
+            new_vote = self.classes.comment_vote(user_id=user_id, direction=direction)
+
+            comment.comment_vote_collection.append(new_vote)
+
+            self.db.session.add(comment)
+
+            if not self.db.session.commit():
+                return [True, 'vote added']
+
+            return [False, 'unable to commit vote']
+
+
+        if q.comment_vote.direction == int(direction):
+            return [True, 'vote unchanged']
+
+        else:
+            q.comment_vote.direction = int(direction)
+            self.db.session.add(q.vote)
+
+            if not self.db.session.commit():
+                return [True, 'vote changed']
+
+            return [False, 'unable to commit vote change']
+            

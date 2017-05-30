@@ -101,6 +101,30 @@ def test_vote_thread():
 
     print(data.json())
 
+def test_vote_comment():
+    api_token = get_api_token()
+
+    thread_data = requests.post('%s/get_threads' % (base_address), {'subvoat_name':'test_exists'}).json()
+
+    thread_uuid = thread_data['result'][0]['uuid']
+
+    comments = requests.post('%s/get_comments' % (base_address), {'thread_uuid':thread_uuid}).json()
+
+    comment_uuid = comments['result'][0]['uuid']
+
+    print('COMMENT UUID: %s' % (comment_uuid))
+
+
+    data = requests.post('%s/vote_comment' % (base_address), {'comment_uuid':comment_uuid,
+                                                              'username':'test_username',
+                                                              'api_token':api_token,
+                                                              'direction':-1})
+
+
+    print(data.json())
+
+
+
 if __name__ == '__main__':
     print('TESTING REGISTRATION')
     test_registration()
@@ -133,4 +157,8 @@ if __name__ == '__main__':
 
     print('TEST VOTE THREAD')
     test_vote_thread()
+    print('\n')
+
+    print('TEST VOTE COMMENT')
+    test_vote_comment()
     print('\n')

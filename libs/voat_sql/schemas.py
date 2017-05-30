@@ -25,7 +25,8 @@ class Thread(Base):
     user_id       = Column(Integer)
     creation_date = Column(DateTime)
     subvoat_id    = Column(Integer, ForeignKey('subvoat.id'))
-    votes         = relationship('Vote', backref=backref('vote', lazy='noload'))
+    votes         = relationship('Vote',    backref=backref('thread_vote',    lazy='noload'))
+    comments      = relationship('Comment', backref=backref('comment', lazy='noload'))
 
 
 class Comment(Base):
@@ -39,6 +40,7 @@ class Comment(Base):
     reply_uuid    = Column(String(200))
     is_edit       = Column(Boolean, default=False)
     original_uuid = Column(String(200))
+    votes         = relationship('CommentVote', backref=backref('comment_vote', lazy='noload'))
 
 
 
@@ -93,12 +95,21 @@ class Server(Base):
     public_key = Column(String(200), unique=True)
 
 
-class Vote(Base):
-    __tablename__ = 'vote'
+class CommentVote(Base):
+    __tablename__ = 'comment_vote'
 
     id           = Column(Integer, primary_key=True)
     # make one-to-one relationship
     user_id      = Column(Integer)
-    direction    = Column(Integer)
-    thread_uuid  = Column(String, ForeignKey('thread.uuid'))
+    direction    = Column(Integer, default=0)
     comment_uuid = Column(String, ForeignKey('comment.uuid'))
+
+
+class ThreadVote(Base):
+    __tablename__ = 'thread_vote'
+
+    id           = Column(Integer, primary_key=True)
+    # make one-to-one relationship
+    user_id      = Column(Integer)
+    direction    = Column(Integer, default=0)
+    thread_uuid  = Column(String, ForeignKey('thread.uuid'))
