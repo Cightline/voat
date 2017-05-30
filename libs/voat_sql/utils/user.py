@@ -1,10 +1,11 @@
 import uuid
 import datetime
 
-from passlib.apps  import custom_app_context as pwd_context
-from voluptuous     import Schema, Required, All, Length, MultipleInvalid
+from passlib.apps           import custom_app_context as pwd_context
+from voluptuous             import Schema, Required, All, Length, MultipleInvalid
+from dateutil.relativedelta import relativedelta
 
-from voat_sql.utils import db
+from voat_sql.utils    import db
 from voat_utils.config import get_config
 
 # PAY ATTENTION WHEN MESSING WITH THIS. 
@@ -44,15 +45,18 @@ class UserUtils():
             return [False, 'user already exists']
 
 
-        password_hash = pwd_context.encrypt(password)
-        api_token     = str(uuid.uuid4())
+        now              = datetime.datetime.utcnow()
+        password_hash    = pwd_context.encrypt(password)
+        api_token        = str(uuid.uuid4())
+        token_expiration = now + relativedelta(months=self.config['months_to_token_expiration'])
 
 
 
         new_user = self.create_user_object(password_hash=password_hash, 
                                            username=username, 
-                                           registration_date=datetime.datetime.utcnow(), 
-                                           api_token=api_token)
+                                           registration_date=now, 
+                                           api_token=api_token,
+                                           verified=False)
 
         self.db.session.add(new_user)
 

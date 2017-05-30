@@ -8,6 +8,7 @@ from voat_rest  import register
 from voat_rest  import authenticate
 from voat_rest  import subvoat
 from voat_rest  import utils
+from voat_rest  import vote
 from voat_utils import config
 
 
@@ -28,6 +29,7 @@ api.add_resource(subvoat.AddSubvoat,        '/create_subvoat')
 api.add_resource(subvoat.ListSubvoats,      '/list_subvoats')
 api.add_resource(subvoat.GetThreads,        '/get_threads')
 api.add_resource(subvoat.SubmitThread,      '/submit_thread')
+api.add_resource(vote.VoteThread,           '/vote_thread')
 api.add_resource(subvoat.GetComments,       '/get_comments')
 api.add_resource(subvoat.SubmitComment,     '/submit_comment')
 api.add_resource(utils.GetPublicKey,        '/get_public_key')

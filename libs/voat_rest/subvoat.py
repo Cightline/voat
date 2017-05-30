@@ -168,7 +168,7 @@ class GetComments(Resource):
         return_data = []
     
         # check UUID length
-        schema = Schema({ Required('thread_uuid'): All(str, Length(min=36))})
+        schema = Schema({ Required('thread_uuid'): All(str, Length(min=36, max=36))})
     
         try:
             schema({'thread_uuid':args.get('thread_uuid')})

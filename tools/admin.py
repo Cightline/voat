@@ -39,7 +39,6 @@ class Admin():
                                                        registration_date=datetime.datetime.utcnow(),
                                                        username=username, 
                                                        verified=True, 
-                                                       token_expiration=one_month,
                                                        site_admin=True)
                                                        
 

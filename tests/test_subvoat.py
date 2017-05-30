@@ -2,14 +2,16 @@ import requests
 import random
 import string
 
+# this shit is half-assed
+
 base_address = 'http://localhost:5000'
 
 def get_api_token():
-    result = requests.post('%s/authenticate' % (base_address), {'username':'test_username', 'password':'test_password'}).json()
+    result = requests.post('%s/authenticate' % (base_address), {'username':'test_username', 'password':'test_password'}).json()['result']
 
-    print(result)
+    #rint(result)
     
-    #return result['api_token']
+    return result['api_token']
 
 def test_registration():
     result = requests.post('%s/register' % (base_address), {'username':'test_username', 'password':'test_password'}).json()
@@ -80,7 +82,21 @@ def test_posting_comment():
                                                               'username':'test_username', 
                                                               'api_token':api_token,
                                                               'body':body}).text)
-                                                            
+    
+def test_vote_thread():
+    api_token = get_api_token()
+
+    thread_data = requests.post('%s/get_threads' % (base_address), {'subvoat_name':'test_exists'}).json()
+
+    thread_uuid = thread_data['result'][0]['uuid']
+
+    data = requests.post('%s/vote_thread' % (base_address), {'thread_uuid':thread_uuid,
+                                                             'username':'test_username',
+                                                             'api_token':api_token,
+                                                             'direction':-1})
+
+
+    print(data.json())
 
 if __name__ == '__main__':
     print('TESTING REGISTRATION')
@@ -110,4 +126,8 @@ if __name__ == '__main__':
 
     print('POSTING COMMENT')
     test_posting_comment()
+    print('\n')
+
+    print('TEST VOTE THREAD')
+    test_vote_thread()
     print('\n')

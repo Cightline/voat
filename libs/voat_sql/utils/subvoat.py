@@ -8,7 +8,7 @@ import uuid
 
 import requests
 
-from voluptuous import Schema, Required, All, Length, MultipleInvalid
+from voluptuous import Schema, Required, All, Length, MultipleInvalid, Range
 
 from voat_sql.utils      import db
 from voat_utils.config   import get_config
@@ -167,5 +167,58 @@ class SubvoatUtils():
 
 
         return thread
+
+    
+    def vote_thread(self, thread_uuid, direction, user_id):
+
+        schema = Schema({ Required('direction'):   All(int, Range(min=-1, max=1)),
+                          Required('thread_uuid'): All(str, Length(min=36, max=36)),
+            })
+
+        try:
+            schema({'direction':direction, 'thread_uuid':thread_uuid})
+
+        except MultipleInvalid as e:
+            return [False, '%s %s' % (e.msg, e.path)]
+
+        
+        thread = self.get_thread_by_uuid(thread_uuid)
+
+        if not thread:
+            return [False, 'no such thread']
+
+        # see if the user already voted, if so change the vote direction if its different 
+        sq = self.db.session.query(self.classes.thread).filter(self.classes.thread.uuid == thread_uuid).subquery()
+        
+        q  = self.db.session.query(self.classes.vote, sq).filter(self.classes.vote.user_id == user_id).first()
+
+    
+        # if the vote doesn't exist, create it and commit it
+        if not q:
+            new_vote = self.classes.vote(user_id=user_id, direction=direction)
+
+            thread.vote_collection.append(new_vote)
+
+            self.db.session.add(thread)
+
+            if not self.db.session.commit():
+                return [True, 'vote added']
+
+            return [False, 'unable to commit vote']
+
+
+        # If the vote is the same
+        if q.direction == int(direction):
+            return [True, 'vote unchanged']
+
+        # Otherwise update the vote direction 
+        else:
+            q.direction = int(direction)
+            self.db.session.add(q)
+
+            if not self.db.session.commit():
+                return [True, 'vote changed']
+       
+            return [False, 'unable to commit vote change'] 
 
 

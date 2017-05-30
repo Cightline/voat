@@ -20,7 +20,7 @@ class Authenticate(Resource):
         if result == False:
             return {'error':'incorrect login'}
 
-
+        
         return {'result':{'api_token':user.api_token, 'username':user.username}}
 
 

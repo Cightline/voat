@@ -25,7 +25,7 @@ class Thread(Base):
     user_id       = Column(Integer)
     creation_date = Column(DateTime)
     subvoat_id    = Column(Integer, ForeignKey('subvoat.id'))
-    votes         = Column(Integer, ForeignKey('user.id'))
+    votes         = relationship('Vote', backref=backref('vote', lazy='noload'))
 
 
 class Comment(Base):
@@ -60,7 +60,7 @@ class User(Base):
     subvoat_admin     = relationship('SubAdmin',  backref=backref('sub_admin', lazy='noload'))
     subvoat_moderator = relationship('Moderator', backref=backref('moderator', lazy='noload'))
     owned_subvoats    = relationship('Subvoat',   backref=backref('subvoat',   lazy='noload'))
-    subscribed_subs   = relationship('Subs',      backref=backref('sub',       lazy='noload'))
+    subscribed_subs   = relationship('Sub',       backref=backref('sub',       lazy='noload'))
 
 
 class SubAdmin(Base):
@@ -78,16 +78,27 @@ class Moderator(Base):
     subvoat_id   = Column(Integer, ForeignKey('subvoat.id'))
 
 
-class Subs(Base):
+class Sub(Base):
     __tablename__ = 'sub'
     
     user_id    = Column(Integer, ForeignKey('user.id'), primary_key=True)
     subvoat_id = Column(Integer, ForeignKey('subvoat.id'))
 
 
-class Servers(Base):
+class Server(Base):
     __tablename__ = 'server'
 
     id         = Column(Integer, primary_key=True)
     address    = Column(String(200), unique=True)
     public_key = Column(String(200), unique=True)
+
+
+class Vote(Base):
+    __tablename__ = 'vote'
+
+    id           = Column(Integer, primary_key=True)
+    # make one-to-one relationship
+    user_id      = Column(Integer)
+    direction    = Column(Integer)
+    thread_uuid  = Column(String, ForeignKey('thread.uuid'))
+    comment_uuid = Column(String, ForeignKey('comment.uuid'))
