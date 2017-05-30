@@ -5,9 +5,11 @@ import string
 base_address = 'http://localhost:5000'
 
 def get_api_token():
-    result = requests.post('%s/authenticate' % (base_address), {'username':'test_username', 'password':'test_password'}).json()['result']
+    result = requests.post('%s/authenticate' % (base_address), {'username':'test_username', 'password':'test_password'}).json()
+
+    print(result)
     
-    return result['api_token']
+    #return result['api_token']
 
 def test_registration():
     result = requests.post('%s/register' % (base_address), {'username':'test_username', 'password':'test_password'}).json()

@@ -1,0 +1,16 @@
+[uwsgi]
+
+chdir = /home/stealth/programming/voat
+module = rest_server:app
+
+master = true
+processes = 1
+threads = 2
+
+uid = voat
+gid = voat
+socket = 127.0.0.1:3031
+chmod-socket = 664
+vacuum = true
+
+die-on-term = true

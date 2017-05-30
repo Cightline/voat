@@ -16,6 +16,7 @@ You can install these with pip (python-pip on Arch Linux)
 * requests
 * celery[redis]
 * redis
+* uwsgi 
 
 The following need to be installed
 * redis (pacman -S redis)
