@@ -18,7 +18,7 @@ class UserUtils():
 
     # Returns a user object
     def create_user_object(self, **kwargs):
-        return self.classes.users(**kwargs)
+        return self.classes.user(**kwargs)
 
     
     def add_user(self, password, username):
@@ -75,14 +75,14 @@ class UserUtils():
         except MultipleInvalid as e:
             return [False, '%s %s' % (e.msg, e.path)]
 
-        return [True, self.db.session.query(self.classes.users).filter(self.classes.users.username == username).first()]
+        return [True, self.db.session.query(self.classes.user).filter(self.classes.user.username == username).first()]
 
 
     def get_user_by_id(self, user_id):
 
         # ADD SCHEMA TYPE INTEGER HERE
         
-        return [True, self.db.session.query(self.classes.users).filter(self.classes.users.id == user_id).first()]
+        return [True, self.db.session.query(self.classes.user).filter(self.classes.user.id == user_id).first()]
 
     def authenticate_by_password(self, username, password):
         result, user = self.get_user(username)

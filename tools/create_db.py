@@ -6,11 +6,10 @@ from sqlalchemy.orm             import Session
 from sqlalchemy                 import create_engine
 from sqlalchemy_utils.functions import database_exists, drop_database
 
-from voat_sql.schemas     import user_schema
-from voat_sql.schemas     import subvoat_schema
-from voat_sql.schemas     import server_schema 
-from voat_sql.db_connect  import Connect
-from voat_sql             import initialize_sql
+from voat_sql.schemas    import schemas
+
+from voat_sql.db_connect import Connect
+from voat_sql            import initialize_sql
 
 
 class CreateDB():

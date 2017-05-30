@@ -6,7 +6,7 @@ setup(
         version='0.1',
         packages=[
                     'voat_sql', 
-                    'voat_sql.schemas',
+                    'voat_sql',
                     'voat_sql.utils',
                     'voat_rest',
                     'voat_utils'],
