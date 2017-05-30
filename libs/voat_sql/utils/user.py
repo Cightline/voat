@@ -47,9 +47,11 @@ class UserUtils():
         password_hash = pwd_context.encrypt(password)
         api_token     = str(uuid.uuid4())
 
+
+
         new_user = self.create_user_object(password_hash=password_hash, 
                                            username=username, 
-                                           creation_time=datetime.datetime.utcnow(), 
+                                           registration_date=datetime.datetime.utcnow(), 
                                            api_token=api_token)
 
         self.db.session.add(new_user)

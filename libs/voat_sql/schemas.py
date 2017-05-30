@@ -12,6 +12,7 @@ class SubVoat(Base):
     creator_id    = Column(Integer)
     threads       = relationship('Thread',    backref=backref('thread',    lazy='noload'))
     moderators    = relationship('Moderator', backref=backref('moderator', lazy='noload'))
+    admins        = relationship('Admin',     backref=backref('admin',     lazy='noload'))
     owner_id      = Column(Integer)
 
 
@@ -36,23 +37,38 @@ class Comment(Base):
     creation_date = Column(DateTime)
     thread_uuid   = Column(String, ForeignKey('thread.uuid'))
     reply_uuid    = Column(String(200))
+    is_edit       = Column(Boolean, default=False)
+    original_uuid = Column(String(200))
 
 
 
 class User(Base):
     __tablename__ = 'user'
 
-    id             = Column(Integer, primary_key=True)
-    creation_time  = Column(DateTime)
-    username       = Column(String(200), unique=True, nullable=False)
-    email          = Column(String(200), unique=True)
-    password_hash  = Column(String(200))
-    api_token      = Column(String(200))
-    banned         = Column(Boolean)
-    verified       = Column(Boolean, default=False)
-    moderator_of   = relationship('Moderator', backref=backref('moderator', lazy='noload'))
-    owned_subvoats = relationship('Subvoat',   backref=backref('subvoat',   lazy='noload'))
-    subs           = relationship('Subs',      backref=backref('sub',       lazy='noload'))
+    id                = Column(Integer, primary_key=True)
+    registration_date = Column(DateTime)
+    username          = Column(String(200), unique=True, nullable=False)
+    email             = Column(String(200), unique=True)
+    password_hash     = Column(String(200))
+    api_token         = Column(String(200))
+    token_expiration  = Column(DateTime)
+    banned            = Column(Boolean)
+    verified          = Column(Boolean, default=False)
+    site_admin        = Column(Boolean, default=False)
+    
+    
+    subvoat_admin     = relationship('SubAdmin',  backref=backref('sub_admin', lazy='noload'))
+    subvoat_moderator = relationship('Moderator', backref=backref('moderator', lazy='noload'))
+    owned_subvoats    = relationship('Subvoat',   backref=backref('subvoat',   lazy='noload'))
+    subscribed_subs   = relationship('Subs',      backref=backref('sub',       lazy='noload'))
+
+
+class SubAdmin(Base):
+    __tablename__ = 'sub_admin'
+
+    id         = Column(Integer, primary_key=True)
+    user_id    = Column(Integer, ForeignKey('user.id'))
+    subvoat_id = Column(Integer, ForeignKey('subvoat.id'))
 
 
 class Moderator(Base):
