@@ -7,11 +7,12 @@ class SubVoat(Base):
     
     id            = Column(Integer, primary_key=True)
     name          = Column(String(200), unique=True, nullable=False)
-    owner_id      = Column(Integer)
     creation_date = Column(DateTime)
-    creator_id    = relationship('User',      backref=backref('user',      lazy='noload'))
+    # FIX: make owner_id/creator_id a one-to-one relationship
+    creator_id    = Column(Integer)
     threads       = relationship('Thread',    backref=backref('thread',    lazy='noload'))
     moderators    = relationship('Moderator', backref=backref('moderator', lazy='noload'))
+    owner_id      = Column(Integer)
 
 
 class Thread(Base):
@@ -41,15 +42,17 @@ class Comment(Base):
 class User(Base):
     __tablename__ = 'user'
 
-    id            = Column(Integer, primary_key=True)
-    creation_time = Column(DateTime)
-    username      = Column(String(200), unique=True, nullable=False)
-    email         = Column(String(200), unique=True)
-    password_hash = Column(String(200))
-    api_token     = Column(String(200))
-    banned        = Column(Boolean)
-    verified      = Column(Boolean, default=False)
-    moderator     = relationship('Moderator', backref=backref('moderator', lazy='noload'))
+    id             = Column(Integer, primary_key=True)
+    creation_time  = Column(DateTime)
+    username       = Column(String(200), unique=True, nullable=False)
+    email          = Column(String(200), unique=True)
+    password_hash  = Column(String(200))
+    api_token      = Column(String(200))
+    banned         = Column(Boolean)
+    verified       = Column(Boolean, default=False)
+    moderator_of   = relationship('Moderator', backref=backref('moderator', lazy='noload'))
+    owned_subvoats = relationship('Subvoat',   backref=backref('subvoat',   lazy='noload'))
+    subs           = relationship('Subs',      backref=backref('sub',       lazy='noload'))
 
 
 class Moderator(Base):
@@ -57,6 +60,13 @@ class Moderator(Base):
     id           = Column(Integer, primary_key=True)
     user_id      = Column(Integer, ForeignKey('user.id'))
     subvoat_id   = Column(Integer, ForeignKey('subvoat.id'))
+
+
+class Subs(Base):
+    __tablename__ = 'sub'
+    
+    user_id    = Column(Integer, ForeignKey('user.id'), primary_key=True)
+    subvoat_id = Column(Integer, ForeignKey('subvoat.id'))
 
 
 class Servers(Base):
