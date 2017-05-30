@@ -146,11 +146,17 @@ class GetThreads(Resource):
                 # NEED TO LOG THIS
                 continue
 
+            c = 0
+
+            for v in t.thread_vote_collection:
+                c += v.direction
+
             return_data.append({'uuid':t.uuid, 
                                 'title':t.title,
                                 'body':t.body,
                                 'username':username,
-                                'creation_date':t.creation_date.isoformat()})
+                                'creation_date':t.creation_date.isoformat(),
+                                'votes':c})
 
         
         return {'result':return_data}
@@ -182,16 +188,23 @@ class GetComments(Resource):
         # append the data to a list and return it. Also change the user_id to username.
         for comment in comments:
             u_status, u_result = user_utils.get_user_by_id(comment.user_id)
-    
+
+            c = 0
             
             if not u_status:
                 # NEED TO LOG THIS 
                 continue 
-
+         
+            # FIX: make this native SQL or something
+            for v in comment.comment_vote_collection:
+                c += v.direction
+                
+            
             return_data.append({'uuid':comment.uuid, 
                                 'body':comment.body,
                                 'username':u_result.username,
-                                'creation_date':comment.creation_date.isoformat()})
+                                'creation_date':comment.creation_date.isoformat(),
+                                'votes':c})
 
 
             
