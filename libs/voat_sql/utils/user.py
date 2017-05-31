@@ -6,38 +6,29 @@ from voluptuous             import Schema, Required, All, Length, MultipleInvali
 from dateutil.relativedelta import relativedelta
 import transaction
 
-from voat_sql.utils    import db
-from voat_utils.config import get_config
-
 from voat_sql.schemas import * 
 
 # PAY ATTENTION WHEN MESSING WITH THIS. 
 
 class UserUtils():
-    def __init__(self, db):
-        self.db      = db
-        self.config  = get_config()
-        self.session = db.session()
+    def __init__(self, db, config, validation_obj):
+        self.db       = db
+        self.config   = config 
+        self.session  = db.session()
+        self.validate = validation_obj
    
 
     # Returns a user object
     def create_user_object(self, **kwargs):
         return User(**kwargs)
-        #return self.classes.user(**kwargs)
 
     
     def add_user(self, password, username):
 
-        schema = Schema({ Required('username'): All(str, Length(min=self.config['min_length_username'])),
-                          Required('password'): All(str, Length(min=self.config['min_length_password']))})
+        v_status, v_result = self.validate.user(username=username, password=password)
 
-
-        try:
-            schema({'username':username, 'password':password})
-
-        except MultipleInvalid as e:
-            return [False, '%s %s' % (e.msg, e.path)]
-
+        if not v_status:
+            return [v_status, v_result]
         
         u_status, u_result = self.get_user(username)
 
@@ -76,17 +67,13 @@ class UserUtils():
    
     # Returns a list [result, data/object/error_message]
     def get_user(self, username):
+        
+        u_status, u_result = self.validate.username(username)
 
-        schema = Schema({ Required('username'): All(str, Length(min=self.config['min_length_username']))})
-
-        try:
-            schema({'username':username})
-
-        except MultipleInvalid as e:
-            return [False, '%s %s' % (e.msg, e.path)]
+        if not u_status:
+            return [u_status, u_result]
 
         return [True, self.session.query(User).filter(User.username == username).first()]
-        #return [True, self.db.session.query(self.classes.user).filter(self.classes.user.username == username).first()]
 
 
     def get_user_by_id(self, user_id):
@@ -94,7 +81,6 @@ class UserUtils():
         # ADD SCHEMA TYPE INTEGER HERE
         
         return [True, self.session.query(User).filter(User.id == user_id).first()]
-        #return [True, self.db.session.query(self.classes.user).filter(self.classes.user.id == user_id).first()]
 
     def authenticate_by_password(self, username, password):
         result, user = self.get_user(username)

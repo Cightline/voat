@@ -4,21 +4,17 @@ from flask_restful import Resource, reqparse
 
 from voluptuous import Schema, Required, All, Length, MultipleInvalid
 
-from voat_sql.utils.servers import ServerUtils
-from voat_sql.utils.user    import UserUtils
-from voat_utils.config      import get_config
 
 class ListSubvoats(Resource):
     def __init__(self, **kwargs):
-        self.db = kwargs['db']
+        self.subvoat_utils = kwars['subvoat_utils']
 
     def get(self):
-        subvoat_utils = SubvoatUtils(self.db)
         parser        = reqparse.RequestParser()
         subvoats      = []
    
         # probably not gonna keep this
-        data = subvoat_utils.get_all_subvoats()
+        data = self.subvoat_utils.get_all_subvoats()
 
         for s in data:
             subvoats.append(s.name)
@@ -28,11 +24,9 @@ class ListSubvoats(Resource):
 
 class SubmitPost(Resource):
     def __init__(self, **kwargs):
-        self.db = kwargs['db']
+        self.subvoat_utils = kwargs['subvoat_utils']
 
     def post(self):
-        subvoat_utils = SubvoatUtils(self.db)
-        config        = get_config()
         parser        = reqparse.RequestParser()
 
         parser.add_argument('subvoat_name')
@@ -43,7 +37,7 @@ class SubmitPost(Resource):
        
         args = parser.parse_args()
 
-    
+        # FIX: NEED AUTHENTICATION
         
         result, message = subvoat_utils.add_post(args['subvoat_name'],
                                                  args['title'],
@@ -61,11 +55,11 @@ class SubmitPost(Resource):
 
 class GetUser(Resource):
     def __init__(self, **kwargs):
-        self.db = kwargs['db']
+        self.config        = kwargs['cfg']
+        self.subvoat_utils = kwargs['subvoat_utils']
+
 
     def get(self):  
-        config        = get_config()
-        subvoat_utils = UserUtils(self.db)
         parser        = reqparse.RequestParser()
         return_data   = []
 
@@ -73,7 +67,7 @@ class GetUser(Resource):
 
         args = parser.parse_args()
 
-        schema = Schema({ Required('subvoat_name'): All(str, Length(min=config['min_length_subvoat_name']))})
+        schema = Schema({ Required('subvoat_name'): All(str, Length(min=self.config['min_length_subvoat_name']))})
 
         try:
             schema({'subvoat_name':args.get('subvoat_name')})
@@ -81,7 +75,7 @@ class GetUser(Resource):
         except MultipleInvalid as e:
             return {'error':'%s %s' % (e.msg, e.path)}
 
-        posts = subvoat_utils.get_posts(args['subvoat_name'])
+        posts = self.subvoat_utils.get_posts(args['subvoat_name'])
 
         
         for p in posts:
@@ -89,6 +83,8 @@ class GetUser(Resource):
 
         
         return {'result':return_data}
+
+
 
 class GetComments(Resource):
     pass

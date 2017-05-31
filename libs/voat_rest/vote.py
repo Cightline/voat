@@ -1,12 +1,10 @@
 
 from flask_restful import Resource, reqparse
 
-from voat_sql.utils.user    import UserUtils
-from voat_sql.utils.subvoat import SubvoatUtils
-
 class VoteThread(Resource):
     def __init__(self, **kwargs):
-        self.db = kwargs['db']
+        self.user_utils    = kwargs['user_utils']
+        self.subvoat_utils = kwargs['subvoat_utils']
 
     def post(self):
 
@@ -19,12 +17,9 @@ class VoteThread(Resource):
 
         args = parser.parse_args()
 
-        user_utils    = UserUtils(self.db)
-        subvoat_utils = SubvoatUtils(self.db)
-
         uuid_ = args.get('thread_uuid')
 
-        user = user_utils.authenticate_by_token(args.get('username'), args.get('api_token'))
+        user = self.user_utils.authenticate_by_token(args.get('username'), args.get('api_token'))
 
         if not user:
             return {'error':'incorrect login'}
@@ -35,9 +30,9 @@ class VoteThread(Resource):
         except Exception as e:
             return {'error':'incorrect direction'}
         
-        status, result  = subvoat_utils.vote_thread(thread_uuid=uuid_, 
-                                                    direction=direction, 
-                                                    user_id=user.id)
+        status, result  = self.subvoat_utils.vote_thread(thread_uuid=uuid_, 
+                                                         direction=direction, 
+                                                         user_id=user.id)
 
         if status == True:
             return {'result':result}
@@ -48,7 +43,8 @@ class VoteThread(Resource):
         
 class VoteComment(Resource):
     def __init__(self, **kwargs):
-        self.db = kwargs['db']
+        self.subvoat_utils = kwargs['subvoat_utils']
+        self.user_utils    = kwargs['user_utils']
 
     def post(self):
 
@@ -61,11 +57,9 @@ class VoteComment(Resource):
 
         args = parser.parse_args()
 
-        user_utils    = UserUtils(self.db)
-        subvoat_utils = SubvoatUtils(self.db)
 
         uuid_ = args.get('comment_uuid')
-        user  = user_utils.authenticate_by_token(args.get('username'), args.get('api_token'))
+        user  = self.user_utils.authenticate_by_token(args.get('username'), args.get('api_token'))
 
         if not user:
             return {'error':'incorrect login'}
@@ -76,7 +70,7 @@ class VoteComment(Resource):
         except Exception as e:
             return {'error':'incorrect direction'}
 
-        status, result = subvoat_utils.vote_comment(comment_uuid=uuid_, direction=direction, user_id=user.id)
+        status, result = self.subvoat_utils.vote_comment(comment_uuid=uuid_, direction=direction, user_id=user.id)
 
         if status == True:
             return {'result':result}

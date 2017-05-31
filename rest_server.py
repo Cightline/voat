@@ -10,7 +10,10 @@ from voat_rest  import subvoat
 from voat_rest  import utils
 from voat_rest  import vote
 from voat_utils import config
+from voat_utils.validate import Valid
 
+from voat_sql.utils.user    import UserUtils
+from voat_sql.utils.subvoat import SubvoatUtils
 
 from voat_sql.utils.db import get_db
 
@@ -20,13 +23,23 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-app.config.update(config.get_config())
 
-db = get_db()
+# Guess I'll init the objects once here and pass them along
+# AFAIK this guarantees one import
+db            = get_db()
+cfg           = config.get_config()
+validate      = Valid(cfg)
+user_utils    = UserUtils(db=db,    config=cfg, validation_obj=validate)
+subvoat_utils = SubvoatUtils(db=db, config=cfg, user_utils=user_utils, validation_obj=validate)
 
-print(db)
+app.config.update(cfg)
 
-kwargs={'db':db}
+kwargs={'db':db, 
+        'user_utils': user_utils, 
+        'cfg':cfg,
+        'subvoat_utils':subvoat_utils,
+        'validate':validate}
+
 
 api.add_resource(authenticate.Authenticate, '/authenticate',   resource_class_kwargs=kwargs)
 api.add_resource(register.Register,         '/register',       resource_class_kwargs=kwargs)

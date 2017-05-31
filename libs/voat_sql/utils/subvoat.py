@@ -5,26 +5,22 @@ import datetime
 import json
 import uuid
 
-
 import requests
 import transaction
 
-from voluptuous import Schema, Required, All, Length, MultipleInvalid, Range
-
-from voat_utils.config   import get_config
 from voat_utils.updater  import send_thread
-from voat_sql.utils.user import UserUtils
 
 # testing something
 from voat_sql.schemas import *
 
 
 class SubvoatUtils():
-    def __init__(self, db):
+    def __init__(self, db, config, user_utils, validation_obj):
         self.db         = db
-        self.config     = get_config()
-        self.user_utils = UserUtils(self.db)
-        self.session   = db.session()
+        self.config     = config
+        self.session    = db.session()
+        self.user_utils = user_utils
+        self.validate   = validation_obj
    
 
     # Returns a user object (see the schemas)
@@ -98,21 +94,12 @@ class SubvoatUtils():
     # Returns [result, message]
     def add_thread(self, subvoat_name, title, body, username):
 
-        schema = Schema({ 
-            Required('subvoat_name'): All(str, Length(min=self.config['min_length_subvoat_name'])),
-            Required('title'):        All(str, Length(min=self.config['min_length_thread_title'])),
-            Required('body'):         All(str, Length(min=self.config['min_length_thread_body'])),
-            })
+        t_status, t_result = self.validate.thread(subvoat_name=subvoat_name,
+                                                  title=title,
+                                                  body=body)
 
-
-        try:
-            schema({'subvoat_name':subvoat_name,
-                    'title':title,
-                    'body':body})
-
-        except MultipleInvalid as e:
-            return [False, '%s %s' % (e.msg, e.path)]
-
+        if not t_status:
+            return [False, t_result]
 
         subvoat = self.get_subvoat(subvoat_name)
 
@@ -191,15 +178,15 @@ class SubvoatUtils():
     
     def vote_thread(self, thread_uuid, direction, user_id):
 
-        schema = Schema({ Required('direction'):   All(int, Range(min=-1, max=1)),
-                          Required('thread_uuid'): All(str, Length(min=36, max=36)) })
+        v_status, v_result = self.validate.vote(direction)
 
-        try:
-            schema({'direction':direction, 'thread_uuid':thread_uuid})
+        if not v_status:
+            return [v_status, v_result]
 
-        except MultipleInvalid as e:
-            return [False, '%s %s' % (e.msg, e.path)]
+        u_status, u_result = self.validate.uuid(thread_uuid)
 
+        if not u_status:
+            return [u_status, u_result]
         
         thread = self.get_thread_by_uuid(thread_uuid)
 
@@ -245,17 +232,18 @@ class SubvoatUtils():
 
 
     def vote_comment(self, comment_uuid, direction, user_id):
+        
+        
+        v_status, v_result = self.validate.vote(direction)
 
-        schema = Schema({ Required('direction'):   All(int, Range(min=-1, max=1)),
-                          Required('comment_uuid'): All(str, Length(min=36, max=36)) })
+        if not v_status:
+            return [v_status, v_result]
 
+        u_status, u_result = self.validate.uuid(comment_uuid)
 
-        try:
-            schema({'direction':direction, 'comment_uuid':comment_uuid})
-
-        except MultipleInvalid as e:
-            return [False, '%s %s' % (e.msg, e.path)]
-
+        if not u_status:
+            return [u_status, u_result]
+        
     
         # FIX: calling comment 2x (sq = )
         comment = self.get_comment_by_uuid(comment_uuid)
