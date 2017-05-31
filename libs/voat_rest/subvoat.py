@@ -10,6 +10,7 @@ from voat_sql.utils.servers import ServerUtils
 from voat_sql.utils.user    import UserUtils
 from voat_utils.config      import get_config
 
+from voat_sql.schemas import *
 
 class AddSubvoat(Resource):
     def __init__(self, **kwargs):
@@ -160,7 +161,7 @@ class GetThreads(Resource):
 
             c = 0
 
-            for v in t.thread_vote_collection:
+            for v in t.votes:
                 c += v.direction
 
             return_data.append({'uuid':t.uuid, 
@@ -211,7 +212,7 @@ class GetComments(Resource):
                 continue 
          
             # FIX: make this native SQL or something
-            for v in comment.comment_vote_collection:
+            for v in comment.votes:
                 c += v.direction
                 
             

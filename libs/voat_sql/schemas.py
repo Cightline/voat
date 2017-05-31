@@ -39,6 +39,7 @@ class Comment(Base):
     thread_uuid   = Column(String, ForeignKey('thread.uuid'))
     reply_uuid    = Column(String(200))
     is_edit       = Column(Boolean, default=False)
+    # for editing  
     original_uuid = Column(String(200))
     votes         = relationship('CommentVote', backref=backref('comment_vote', lazy='noload'))
 

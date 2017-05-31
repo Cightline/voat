@@ -16,7 +16,7 @@ from voat_utils.updater  import send_thread
 from voat_sql.utils.user import UserUtils
 
 # testing something
-from voat_sql.schemas import * 
+from voat_sql.schemas import *
 
 
 class SubvoatUtils():
@@ -30,15 +30,15 @@ class SubvoatUtils():
 
     # Returns a user object (see the schemas)
     def create_subvoat_object(self, **kwargs):
-        return SubVoat
+        return SubVoat(**kwargs)
 
 
     def create_thread_object(self, **kwargs):
-        return Thread
+        return Thread(**kwargs)
 
 
     def create_comment_object(self, **kwargs):
-        return Comment
+        return Comment(**kwargs)
 
 
     # Returns a user object 
@@ -48,7 +48,7 @@ class SubvoatUtils():
  
     def get_comments(self, thread_uuid):
         
-        return self.session.query(Thread).filter(Thread.uuid == thread_uuid).first().comment_collection
+        return self.session.query(Thread).filter(Thread.uuid == thread_uuid).first().comments
 
         #return self.db.session.query(self.classes.thread).filter(self.classes.thread.uuid == thread_uuid).first().comment_collection
 
@@ -88,7 +88,7 @@ class SubvoatUtils():
                                                  uuid=str(uuid.uuid4()), 
                                                  creation_date=datetime.datetime.utcnow())
 
-        thread.comment_collection.append(new_comment)
+        thread.comments.append(new_comment)
 
         if not transaction.commit():
             return [True, 'added']
@@ -139,7 +139,7 @@ class SubvoatUtils():
                                            user_id=result.id,
                                            creation_date=now)
 
-        subvoat.thread_collection.append(new_thread)
+        subvoat.threads.append(new_thread)
 
         transaction.commit()
 
@@ -154,7 +154,7 @@ class SubvoatUtils():
     def get_all_threads(self, subvoat_name):
         threads = []
 
-        subvoat = self.session.query(SubVoat).filter(Subvoat.name == subvoat_name).first()
+        subvoat = self.session.query(SubVoat).filter(SubVoat.name == subvoat_name).first()
         #subvoat =  self.db.session.query(self.classes.subvoat).filter(self.classes.subvoat.name == subvoat_name).first()
 
 
@@ -172,7 +172,7 @@ class SubvoatUtils():
             
             
 
-        return subvoat.thread_collection
+        return subvoat.threads
 
     def get_thread_by_uuid(self, uuid):
         thread = self.session.query(Thread).filter(Thread.uuid == uuid).first()
@@ -218,9 +218,9 @@ class SubvoatUtils():
     
         # if the vote doesn't exist, create it and commit it
         if not q:
-            new_vote = self.classes.thread_vote(user_id=user_id, direction=direction)
+            new_vote = ThreadVote(user_id=user_id, direction=direction)
 
-            thread.thread_vote_collection.append(new_vote)
+            thread.votes.append(new_vote)
 
             self.db.session.add(thread)
 
@@ -231,12 +231,12 @@ class SubvoatUtils():
 
 
         # If the vote is the same
-        if q.thread_vote.direction == int(direction):
+        if q.ThreadVote.direction == int(direction):
             return [True, 'vote unchanged']
 
         # Otherwise update the vote direction 
         else:
-            q.thread_vote.direction = int(direction)
+            q.ThreadVote.direction = int(direction)
             self.db.session.add(q.vote)
 
             if not transaction.commit():
@@ -277,9 +277,9 @@ class SubvoatUtils():
 
         
         if not q:
-            new_vote = self.classes.comment_vote(user_id=user_id, direction=direction)
+            new_vote = CommentVote(user_id=user_id, direction=direction)
 
-            comment.comment_vote_collection.append(new_vote)
+            comment.votes.append(new_vote)
 
             self.db.session.add(comment)
 
@@ -288,12 +288,11 @@ class SubvoatUtils():
 
             return [False, 'unable to commit vote']
 
-
-        if q.comment_vote.direction == int(direction):
+        if q.CommentVote.direction == int(direction):
             return [True, 'vote unchanged']
 
         else:
-            q.comment_vote.direction = int(direction)
+            q.CommentVote.direction = int(direction)
             self.db.session.add(q.vote)
 
             if not transaction.commit():
