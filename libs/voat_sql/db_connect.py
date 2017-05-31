@@ -13,6 +13,7 @@ class Connect():
         self.engine = create_engine(db_path, convert_unicode=True, pool_size=0)
 
         #self.base.prepare(self.engine, reflect=True)
-        self.session = scoped_session(sessionmaker(bind=self.engine, extension=ZopeTransactionExtension(keep_session=True)))
+        #self.session = scoped_session(sessionmaker(bind=self.engine, extension=ZopeTransactionExtension(keep_session=False)))
+        self.session = scoped_session(sessionmaker(bind=self.engine))
 
-        register(self.session, keep_session=True)
+        #register(self.session, keep_session=True)
