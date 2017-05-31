@@ -6,28 +6,18 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy                 import create_engine, MetaData
 from sqlalchemy_utils.functions import database_exists, drop_database
 
-from voat_sql.schemas    import *
+from voat_sql.schemas    import * 
 from voat_sql.db_connect import Connect
-from voat_sql            import initialize_sql
 
 
 class CreateDB():
     def __init__(self, db_path):
-        #self.base    = automap_base()
         self.db_path = db_path
         self.engine  = create_engine(db_path, echo=True)
-        self.engine.connect()
-        self.metadata = MetaData()
 
 
     def create(self):
-        #self.engine.execute('create database voat')
-        #self.base.metadata.bind = self.engine
-        #self.base.metadata.create_all(self.engine)
-
-        self.metadata.reflect(self.engine)
-
-        self.base = automap_base(metadata=self.metadata)
+        Base.metadata.create_all(self.engine)
 
 
 

@@ -54,6 +54,8 @@ class Performance():
 
         self.check(result)
 
+        #print(result.json()['result'][0])
+
         print('%s threads, execution time: %s' % (len(result.json()['result']), result_time))
 
 

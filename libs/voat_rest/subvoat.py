@@ -212,6 +212,8 @@ class GetComments(Resource):
                 continue 
          
             # FIX: make this native SQL or something
+            # thehivemind | should just be like len(select * from votes where up) - len(select * from votes where down)
+
             for v in comment.votes:
                 c += v.direction
                 
