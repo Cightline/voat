@@ -17,6 +17,7 @@ You can install these with pip (python-pip on Arch Linux)
 * celery[redis]
 * redis
 * uwsgi 
+* psycopg2
 
 The following need to be installed
 * redis (pacman -S redis)

@@ -9,18 +9,21 @@ import transaction
 from voat_sql.utils    import db
 from voat_utils.config import get_config
 
+from voat_sql.schemas import * 
+
 # PAY ATTENTION WHEN MESSING WITH THIS. 
 
 class UserUtils():
     def __init__(self, db):
         self.db      = db
         self.config  = get_config()
-        self.classes = self.db.base.classes
+        self.session = db.session()
    
 
     # Returns a user object
     def create_user_object(self, **kwargs):
-        return self.classes.user(**kwargs)
+        return User(**kwargs)
+        #return self.classes.user(**kwargs)
 
     
     def add_user(self, password, username):
@@ -59,7 +62,7 @@ class UserUtils():
                                            api_token=api_token,
                                            verified=False)
 
-        self.db.session.add(new_user)
+        self.session.add(new_user)
 
         status = transaction.commit()
 
@@ -82,14 +85,16 @@ class UserUtils():
         except MultipleInvalid as e:
             return [False, '%s %s' % (e.msg, e.path)]
 
-        return [True, self.db.session.query(self.classes.user).filter(self.classes.user.username == username).first()]
+        return [True, self.session.query(User).filter(User.username == username).first()]
+        #return [True, self.db.session.query(self.classes.user).filter(self.classes.user.username == username).first()]
 
 
     def get_user_by_id(self, user_id):
 
         # ADD SCHEMA TYPE INTEGER HERE
         
-        return [True, self.db.session.query(self.classes.user).filter(self.classes.user.id == user_id).first()]
+        return [True, self.session.query(User).filter(User.id == user_id).first()]
+        #return [True, self.db.session.query(self.classes.user).filter(self.classes.user.id == user_id).first()]
 
     def authenticate_by_password(self, username, password):
         result, user = self.get_user(username)

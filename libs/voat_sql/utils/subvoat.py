@@ -22,7 +22,6 @@ from voat_sql.schemas import *
 class SubvoatUtils():
     def __init__(self, db):
         self.db         = db
-        self.classes    = self.db.base.classes
         self.config     = get_config()
         self.user_utils = UserUtils(self.db)
         self.session   = db.session()
