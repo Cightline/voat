@@ -15,6 +15,8 @@ from voat_utils.config   import get_config
 from voat_utils.updater  import send_thread
 from voat_sql.utils.user import UserUtils
 
+# testing something
+from voat_sql.schemas import * 
 
 
 class SubvoatUtils():
@@ -27,14 +29,15 @@ class SubvoatUtils():
 
     # Returns a user object (see the schemas)
     def create_subvoat_object(self, **kwargs):
-        return self.classes.subvoat(**kwargs)
+        return SubVoat
 
 
     def create_thread_object(self, **kwargs):
-        return self.classes.thread(**kwargs)
+        return Thread
+
 
     def create_comment_object(self, **kwargs):
-        return self.classes.comment(**kwargs)
+        return Comment
 
 
     # Returns a user object 

@@ -4,3 +4,6 @@ from voat_utils          import config
 
 def get_db():
     return Connect(config.get_config()['SQLALCHEMY_DATABASE_URI'])
+
+
+

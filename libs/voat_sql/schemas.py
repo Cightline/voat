@@ -12,8 +12,8 @@ class SubVoat(Base):
     creator_id    = Column(Integer)
     threads       = relationship('Thread',    backref=backref('thread',    lazy='noload'))
     moderators    = relationship('Moderator', backref=backref('moderator', lazy='noload'))
-    admins        = relationship('Admin',     backref=backref('admin',     lazy='noload'))
-    owner_id      = Column(Integer)
+    admins        = relationship('SubAdmin',     backref=backref('sub_admin',     lazy='noload'))
+    owner_id      = Column(Integer, ForeignKey('user.id'))
 
 
 class Thread(Base):
@@ -25,8 +25,8 @@ class Thread(Base):
     user_id       = Column(Integer)
     creation_date = Column(DateTime)
     subvoat_id    = Column(Integer, ForeignKey('subvoat.id'))
-    votes         = relationship('Vote',    backref=backref('thread_vote',    lazy='noload'))
-    comments      = relationship('Comment', backref=backref('comment', lazy='noload'))
+    votes         = relationship('ThreadVote',    backref=backref('thread_vote',    lazy='noload'))
+    comments      = relationship('Comment',       backref=backref('comment', lazy='noload'))
 
 
 class Comment(Base):
@@ -59,9 +59,9 @@ class User(Base):
     site_admin        = Column(Boolean, default=False)
     
     
-    subvoat_admin     = relationship('SubAdmin',  backref=backref('sub_admin', lazy='noload'))
-    subvoat_moderator = relationship('Moderator', backref=backref('moderator', lazy='noload'))
-    owned_subvoats    = relationship('Subvoat',   backref=backref('subvoat',   lazy='noload'))
+    subvoat_admin     = relationship('SubAdmin',  backref=backref('user_sub_admin', lazy='noload'))
+    subvoat_moderator = relationship('Moderator', backref=backref('user_moderator', lazy='noload'))
+    owned_subvoats    = relationship('SubVoat',   backref=backref('subvoat',   lazy='noload'))
     subscribed_subs   = relationship('Sub',       backref=backref('sub',       lazy='noload'))
 
 

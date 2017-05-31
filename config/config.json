@@ -1,5 +1,5 @@
 {
-    "debug":true,
+    "debug":false,
     "SQLALCHEMY_DATABASE_URI":"postgresql+psycopg2://postgres:password@localhost/voat",
     "min_length_username":4,
     "min_length_api_token":4,

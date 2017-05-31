@@ -1,4 +1,5 @@
 ; sudo uwsgi --ini config/rest_server.ini
+; http://uwsgi-docs.readthedocs.io/en/latest/ThingsToKnow.html
 
 [uwsgi]
 
@@ -6,8 +7,8 @@ chdir = /home/stealth/programming/voat
 module = rest_server:app
 
 master = true
-processes = 10
-threads = 1
+processes = 1
+threads = 2
 
 uid = voat
 gid = voat
