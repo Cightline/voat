@@ -244,11 +244,12 @@ class SubmitComment(Resource):
         args = parser.parse_args()
 
         
-        # Validate some stuff 
-        uuid_status, uuid_result = self.validate.uuid(args.get('reply_to_uuid'))
+        # if they are replying to someone
+        if args.get('reply_to_uuid'):
+            uuid_status, uuid_result = self.validate.uuid(args.get('reply_to_uuid'))
 
-        if not uuid_status:
-            return {'error':uuid_result}
+            if not uuid_status:
+                return {'error':uuid_result}
 
 
         cb_status, cb_result = self.validate.comment_body(args.get('body'))
