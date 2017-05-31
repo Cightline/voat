@@ -12,9 +12,13 @@ from voat_utils.config      import get_config
 
 
 class AddSubvoat(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db']
+
+
     def post(self):
-        subvoat_utils = SubvoatUtils()
-        user_utils    = UserUtils()
+        subvoat_utils = SubvoatUtils(self.db)
+        user_utils    = UserUtils(self.db)
         parser        = reqparse.RequestParser()
         config        = get_config()
 
@@ -66,8 +70,11 @@ class AddSubvoat(Resource):
 
 
 class ListSubvoats(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db']
+
     def get(self):
-        subvoat_utils = SubvoatUtils()
+        subvoat_utils = SubvoatUtils(self.db)
         parser        = reqparse.RequestParser()
         subvoats      = []
    
@@ -81,9 +88,11 @@ class ListSubvoats(Resource):
 
 
 class SubmitThread(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db'] 
+
     def post(self):
-        server_utils  = ServerUtils()
-        subvoat_utils = SubvoatUtils()
+        subvoat_utils = SubvoatUtils(self.db)
         config        = get_config()
         parser        = reqparse.RequestParser()
 
@@ -112,10 +121,13 @@ class SubmitThread(Resource):
         
 
 class GetThreads(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db']
+
     def post(self):  
         config        = get_config()
-        subvoat_utils = SubvoatUtils()
-        user_utils    = UserUtils()
+        subvoat_utils = SubvoatUtils(self.db)
+        user_utils    = UserUtils(self.db)
         parser        = reqparse.RequestParser()
         return_data   = []
 
@@ -163,9 +175,12 @@ class GetThreads(Resource):
     
 
 class GetComments(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db']
+
     def post(self):
-        subvoat_utils = SubvoatUtils()
-        user_utils    = UserUtils()
+        subvoat_utils = SubvoatUtils(self.db)
+        user_utils    = UserUtils(self.db)
         parser = reqparse.RequestParser()
 
         parser.add_argument('thread_uuid')
@@ -213,11 +228,14 @@ class GetComments(Resource):
 
 
 class SubmitComment(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db']
+
     def post(self):
         config        = get_config()
         parser        = reqparse.RequestParser()
-        user_utils    = UserUtils()
-        subvoat_utils = SubvoatUtils()
+        user_utils    = UserUtils(self.db)
+        subvoat_utils = SubvoatUtils(self.db)
 
         parser.add_argument('username')
         parser.add_argument('api_token')

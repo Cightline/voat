@@ -6,8 +6,8 @@ chdir = /home/stealth/programming/voat
 module = rest_server:app
 
 master = true
-processes = 1
-threads = 2
+processes = 10
+threads = 1
 
 uid = voat
 gid = voat

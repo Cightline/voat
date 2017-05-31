@@ -3,9 +3,11 @@ from flask_restful import Resource, reqparse
 from voat_sql.utils.user import UserUtils
 
 class Authenticate(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db']
 
     def post(self):
-        user_utils = UserUtils()
+        user_utils = UserUtils(self.db)
         parser     = reqparse.RequestParser()
         
         # prob need some sort of max length limit

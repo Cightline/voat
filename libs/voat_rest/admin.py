@@ -5,8 +5,11 @@ from voat_sql.utils.user import UserUtils
 from voat_utils.config   import get_config, write_value
 
 class ChangeSetting(Resource):
+    def __init__(**kwargs):
+        self.db = kwargs['db']
+
     def post(self):
-        user_utils = UserUtils()   
+        user_utils = UserUtils(self.db)   
     
         parser.add_argument('setting')
         parser.add_argument('value')
@@ -41,6 +44,9 @@ class ChangeSetting(Resource):
 
 
 class GetSettings(Resource):
+    def __init__(**kwargs):
+        self.db = kwargs['db']
+
     def post(self):
         user_utils = UserUtils()
 

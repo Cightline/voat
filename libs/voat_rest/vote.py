@@ -5,6 +5,9 @@ from voat_sql.utils.user    import UserUtils
 from voat_sql.utils.subvoat import SubvoatUtils
 
 class VoteThread(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db']
+
     def post(self):
 
         parser = reqparse.RequestParser()
@@ -16,8 +19,8 @@ class VoteThread(Resource):
 
         args = parser.parse_args()
 
-        user_utils    = UserUtils()
-        subvoat_utils = SubvoatUtils()
+        user_utils    = UserUtils(self.db)
+        subvoat_utils = SubvoatUtils(self.db)
 
         uuid_ = args.get('thread_uuid')
 
@@ -44,6 +47,9 @@ class VoteThread(Resource):
 
         
 class VoteComment(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db']
+
     def post(self):
 
         parser = reqparse.RequestParser()
@@ -55,8 +61,8 @@ class VoteComment(Resource):
 
         args = parser.parse_args()
 
-        user_utils    = UserUtils()
-        subvoat_utils = SubvoatUtils()
+        user_utils    = UserUtils(self.db)
+        subvoat_utils = SubvoatUtils(self.db)
 
         uuid_ = args.get('comment_uuid')
         user  = user_utils.authenticate_by_token(args.get('username'), args.get('api_token'))

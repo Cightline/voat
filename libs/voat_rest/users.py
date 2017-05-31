@@ -9,8 +9,11 @@ from voat_sql.utils.user    import UserUtils
 from voat_utils.config      import get_config
 
 class ListSubvoats(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db']
+
     def get(self):
-        subvoat_utils = SubvoatUtils()
+        subvoat_utils = SubvoatUtils(self.db)
         parser        = reqparse.RequestParser()
         subvoats      = []
    
@@ -24,10 +27,11 @@ class ListSubvoats(Resource):
 
 
 class SubmitPost(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db']
+
     def post(self):
-        
-        server_utils  = ServerUtils()
-        subvoat_utils = SubvoatUtils()
+        subvoat_utils = SubvoatUtils(self.db)
         config        = get_config()
         parser        = reqparse.RequestParser()
 
@@ -56,9 +60,12 @@ class SubmitPost(Resource):
         
 
 class GetUser(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db']
+
     def get(self):  
         config        = get_config()
-        subvoat_utils = UserUtils()
+        subvoat_utils = UserUtils(self.db)
         parser        = reqparse.RequestParser()
         return_data   = []
 

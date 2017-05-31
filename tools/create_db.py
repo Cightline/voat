@@ -32,17 +32,17 @@ if __name__ == '__main__':
         cfg     = json.load(c)
         db_path = cfg['SQLALCHEMY_DATABASE_URI']
 
-        try:
-            if database_exists(db_path):
-                confirm = input('database already exists, delete anyways? [y/n]: ').lower().strip()
+        #try:
+        #    if database_exists(db_path):
+        #        confirm = input('database already exists, delete anyways? [y/n]: ').lower().strip()
 
-                if confirm != 'y' and confirm.lower() != 'yes':
-                    exit()
+        #        if confirm != 'y' and confirm.lower() != 'yes':
+        #            exit()
 
-                drop_database(db_path)
+        #        drop_database(db_path)
 
-        except FileNotFoundError as e:
-            pass
+        #except FileNotFoundError as e:
+        #    pass
 
         cdb     = CreateDB(db_path)
         result  = cdb.create()

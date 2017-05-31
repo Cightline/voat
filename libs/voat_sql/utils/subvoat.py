@@ -7,10 +7,10 @@ import uuid
 
 
 import requests
+import transaction
 
 from voluptuous import Schema, Required, All, Length, MultipleInvalid, Range
 
-from voat_sql.utils      import db
 from voat_utils.config   import get_config
 from voat_utils.updater  import send_thread
 from voat_sql.utils.user import UserUtils
@@ -18,11 +18,11 @@ from voat_sql.utils.user import UserUtils
 
 
 class SubvoatUtils():
-    def __init__(self):
-        self.db         = db.get_db()
+    def __init__(self, db):
+        self.db         = db
         self.classes    = self.db.base.classes
         self.config     = get_config()
-        self.user_utils = UserUtils()
+        self.user_utils = UserUtils(self.db)
    
 
     # Returns a user object (see the schemas)
@@ -52,7 +52,8 @@ class SubvoatUtils():
     def add_subvoat(self, new_subvoat):
         self.db.session.add(new_subvoat)
         
-        result = self.db.session.commit()
+        #result = self.db.session.commit()
+        result = transaction.commit()
 
         return result
 
@@ -79,7 +80,7 @@ class SubvoatUtils():
 
         thread.comment_collection.append(new_comment)
 
-        if not self.db.session.commit():
+        if not transaction.commit():
             return [True, 'added']
 
         return [False, 'unable to add comment']
@@ -130,8 +131,7 @@ class SubvoatUtils():
 
         subvoat.thread_collection.append(new_thread)
 
-        self.db.session.commit()
-
+        transaction.commit()
 
         # JUST TESTING, FIX THIS (MAKE IT ASYNC, OTHERWISE IT WILL BLOCK)
 
@@ -205,7 +205,7 @@ class SubvoatUtils():
 
             self.db.session.add(thread)
 
-            if not self.db.session.commit():
+            if not transaction.commit():
                 return [True, 'vote added']
 
             return [False, 'unable to commit vote']
@@ -220,7 +220,7 @@ class SubvoatUtils():
             q.thread_vote.direction = int(direction)
             self.db.session.add(q.vote)
 
-            if not self.db.session.commit():
+            if not transaction.commit():
                 return [True, 'vote changed']
        
             return [False, 'unable to commit vote change'] 
@@ -259,7 +259,7 @@ class SubvoatUtils():
 
             self.db.session.add(comment)
 
-            if not self.db.session.commit():
+            if not transaction.commit():
                 return [True, 'vote added']
 
             return [False, 'unable to commit vote']
@@ -272,7 +272,7 @@ class SubvoatUtils():
             q.comment_vote.direction = int(direction)
             self.db.session.add(q.vote)
 
-            if not self.db.session.commit():
+            if not transaction.commit():
                 return [True, 'vote changed']
 
             return [False, 'unable to commit vote change']

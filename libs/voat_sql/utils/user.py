@@ -4,6 +4,7 @@ import datetime
 from passlib.apps           import custom_app_context as pwd_context
 from voluptuous             import Schema, Required, All, Length, MultipleInvalid
 from dateutil.relativedelta import relativedelta
+import transaction
 
 from voat_sql.utils    import db
 from voat_utils.config import get_config
@@ -11,8 +12,8 @@ from voat_utils.config import get_config
 # PAY ATTENTION WHEN MESSING WITH THIS. 
 
 class UserUtils():
-    def __init__(self):
-        self.db      = db.get_db()
+    def __init__(self, db):
+        self.db      = db
         self.config  = get_config()
         self.classes = self.db.base.classes
    
@@ -60,7 +61,7 @@ class UserUtils():
 
         self.db.session.add(new_user)
 
-        status = self.db.session.commit()
+        status = transaction.commit()
 
         # FIX: log this
         if not status:

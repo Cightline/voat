@@ -12,9 +12,12 @@ from voat_sql.utils.db   import get_db
 
 
 class Register(Resource):
+    def __init__(self, **kwargs):
+        self.db = kwargs['db']
+
     def post(self):
 
-        user_utils = UserUtils()
+        user_utils = UserUtils(self.db)
         db         = get_db()
 
         parser = reqparse.RequestParser()

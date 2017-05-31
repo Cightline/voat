@@ -12,7 +12,7 @@ from voat_rest  import vote
 from voat_utils import config
 
 
-
+from voat_sql.utils.db import get_db
 
 # Need a logger
 
@@ -22,18 +22,23 @@ api = Api(app)
 
 app.config.update(config.get_config())
 
+db = get_db()
 
-api.add_resource(authenticate.Authenticate, '/authenticate')
-api.add_resource(register.Register,         '/register')
-api.add_resource(subvoat.AddSubvoat,        '/create_subvoat')
-api.add_resource(subvoat.ListSubvoats,      '/list_subvoats')
-api.add_resource(subvoat.GetThreads,        '/get_threads')
-api.add_resource(subvoat.SubmitThread,      '/submit_thread')
-api.add_resource(vote.VoteThread,           '/vote_thread')
-api.add_resource(vote.VoteComment,          '/vote_comment')
-api.add_resource(subvoat.GetComments,       '/get_comments')
-api.add_resource(subvoat.SubmitComment,     '/submit_comment')
-api.add_resource(utils.GetPublicKey,        '/get_public_key')
+print(db)
+
+kwargs={'db':db}
+
+api.add_resource(authenticate.Authenticate, '/authenticate',   resource_class_kwargs=kwargs)
+api.add_resource(register.Register,         '/register',       resource_class_kwargs=kwargs)
+api.add_resource(subvoat.AddSubvoat,        '/create_subvoat', resource_class_kwargs=kwargs)
+api.add_resource(subvoat.ListSubvoats,      '/list_subvoats',  resource_class_kwargs=kwargs)
+api.add_resource(subvoat.GetThreads,        '/get_threads',    resource_class_kwargs=kwargs)
+api.add_resource(subvoat.SubmitThread,      '/submit_thread',  resource_class_kwargs=kwargs)
+api.add_resource(vote.VoteThread,           '/vote_thread',    resource_class_kwargs=kwargs)
+api.add_resource(vote.VoteComment,          '/vote_comment',   resource_class_kwargs=kwargs)
+api.add_resource(subvoat.GetComments,       '/get_comments',   resource_class_kwargs=kwargs)
+api.add_resource(subvoat.SubmitComment,     '/submit_comment', resource_class_kwargs=kwargs)
+api.add_resource(utils.GetPublicKey,        '/get_public_key', resource_class_kwargs=kwargs)
 
 
 # Debugging
