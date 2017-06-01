@@ -82,6 +82,7 @@ class SubmitThread(Resource):
         self.user_utils    = kwargs['user_utils']
         self.config        = kwargs['cfg']
 
+
     def post(self):
         parser        = reqparse.RequestParser()
 
@@ -122,48 +123,51 @@ class GetThreads(Resource):
         return_data   = []
 
         parser.add_argument('subvoat_name')
+        parser.add_argument('page_start', default=0)
+        parser.add_argument('page_end',   default=self.config['max_pages_per_request'])
 
         args   = parser.parse_args()
+
+        start = args.get('page_start')
+        end   = args.get('page_end')
 
         # FIX: move to SubvoatUtils
         v_status, v_result = self.validate.subvoat_name(args.get('subvoat_name'))
 
         if not v_status:
             return {'error':v_result}
+
+        p_status, p_result = self.validate.page(start, end)
+
+        if not p_status:
+            return {'error':p_result}
         
-        threads = self.subvoat_utils.get_all_threads(args['subvoat_name'])
-
-        if not threads:
-            return {'error':'no threads'}
-
-    
+        
         # check to see if the subvoat even exists
         if not self.subvoat_utils.get_subvoat(args.get('subvoat_name')):
             return {'error':'no such subvoat'}
 
-       
+
+        t_status, t_result =  self.subvoat_utils.get_threads(args['subvoat_name'], start=start, end=end)
+
+        if not t_status:
+            return {'error':t_result}
+
+
         # see the thread schema in voat_sql/schemas/subvoat_schema.py
-        # I convert the user_id to username
         # FIX: this could cause performance problems (user.id lookup)
-        for t in threads:
-            user_status, user_result = self.user_utils.get_user_by_id(t.user_id)
-
-            if user_status:
-                username = user_result.username
-
-            else:
-                # NEED TO LOG THIS
-                continue
-
+        for t in t_result:
+            
             c = 0
 
             for v in t.votes:
                 c += v.direction
 
             return_data.append({'uuid':t.uuid, 
+                                'local_id':t.id,
                                 'title':t.title,
                                 'body':t.body,
-                                'username':username,
+                                'username':t.user_id,
                                 'creation_date':t.creation_date.isoformat(),
                                 'votes':c})
 

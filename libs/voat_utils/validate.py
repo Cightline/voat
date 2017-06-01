@@ -71,7 +71,6 @@ class Valid():
 
 
     def vote(self, direction):
-
         schema = Schema({ Required('vote'): All(int, Range(min=-1, max=1))})
 
         return self.try_schema('vote', direction, schema)
@@ -104,3 +103,31 @@ class Valid():
 
         return [True, None]
         
+
+    def page(self, start, end):
+        s_schema = Schema({ Required('start'): All(int, Range(min=0))})
+        e_schema = Schema({ Required('end'):   All(int, Range(min=0))})
+
+        s_status, s_result = self.try_schema('start', start, s_schema)
+
+        if not s_status:
+            return [s_status, s_result]
+
+       
+        e_status, e_result = self.try_schema('end', end, e_schema)
+
+        if not e_status:
+            return [e_status, e_result]
+
+        if end < start:
+            return [False, 'ending page cannot be lower than starting page']
+
+    
+        total_pages = end - start
+
+        if total_pages > 50:
+            return [False, 'you cannot request more than 50 pages']
+
+        return [True, None]
+        
+    

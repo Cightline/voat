@@ -18,15 +18,16 @@ class SubVoat(Base):
 
 class Thread(Base):
     __tablename__ = 'thread'
-    
-    uuid          = Column(String(200), primary_key=True)
+
+    id            = Column(Integer, primary_key=True)
+    uuid          = Column(String(200), unique=True)
     title         = Column(String(200))
     body          = Column(String(200))
     user_id       = Column(Integer)
     creation_date = Column(DateTime)
     subvoat_id    = Column(Integer, ForeignKey('subvoat.id'))
-    votes         = relationship('ThreadVote',    backref=backref('thread_vote',    lazy='noload'))
-    comments      = relationship('Comment',       backref=backref('comment', lazy='noload'))
+    votes         = relationship('ThreadVote',    backref=backref('thread_vote', lazy='noload'))
+    comments      = relationship('Comment',       backref=backref('comment',     lazy='noload'))
 
 
 class Comment(Base):

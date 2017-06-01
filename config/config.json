@@ -15,6 +15,7 @@
     "max_length_password":50,
     "max_length_thread_title":50,
     "max_length_thread_body":2000,
+    "max_pages_per_request":20,
     "server_key_bits":1024,
     "broker":"redis://localhost:6379",
     "result_backend":"redis://localhost:6379",

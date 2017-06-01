@@ -39,19 +39,16 @@ class SubvoatUtils():
     # Returns a user object 
     def get_subvoat(self, subvoat_name):
         return self.session.query(SubVoat).filter(SubVoat.name == subvoat_name).first()
-        #return self.db.session.query(self.classes.subvoat).filter(self.classes.subvoat.name == subvoat_name).first()
- 
+
+
     def get_comments(self, thread_uuid):
         
         return self.session.query(Thread).filter(Thread.uuid == thread_uuid).first().comments
-
-        #return self.db.session.query(self.classes.thread).filter(self.classes.thread.uuid == thread_uuid).first().comment_collection
 
 
     def get_all_subvoats(self):
         return self.session.query(SubVoat).all()
 
-        #return self.db.session.query(self.classes.subvoat).all()
 
     
     def add_subvoat(self, new_subvoat):
@@ -137,41 +134,26 @@ class SubvoatUtils():
 
         
     # Make one that orders by date, with a limit
-    def get_all_threads(self, subvoat_name):
-        threads = []
+    def get_threads(self, subvoat_name, start, end):
+        # Find out how many pages there are, start with that page (descending) and limit by pages. 
+        pages = end - start
+        print(pages)
+        
+        if pages > self.config['max_pages_per_request']:
+            return [False, 'too many pages, %s is the max' % (self.config['max_pages_per_request'])]
 
-        subvoat = self.session.query(SubVoat).filter(SubVoat.name == subvoat_name).first()
-        #subvoat =  self.db.session.query(self.classes.subvoat).filter(self.classes.subvoat.name == subvoat_name).first()
+        threads = self.session.query(Thread).order_by(Thread.id.desc()).filter(SubVoat.name == subvoat_name).limit(pages)
 
-
-        # probably want to limit this
-        #if subvoat:
-        #    for thread in subvoat.thread_collection:
-                # Need to convert the user_id to username
-                #u_result, u_obj = self.user_utils.get_user_by_id(thread.user_id)
-
-                #f u_result == False:
-                    # LOG ERROR HERE
-                    # error message should be in u_obj
-                #   continue 
-
-            
-            
-
-        return subvoat.threads
+        return [True, threads]
 
     def get_thread_by_uuid(self, uuid):
         thread = self.session.query(Thread).filter(Thread.uuid == uuid).first()
-
-        #thread = self.db.session.query(self.classes.thread).filter(self.classes.thread.uuid == uuid).first()
 
 
         return thread
 
     def get_comment_by_uuid(self, uuid):
         comment = self.session.query(Comment).filter(Comment.uuid == uuid).first()
-
-        #comment = self.db.session.query(self.classes.comment).filter(self.classes.comment.uuid == uuid).first()
 
         return comment
 
@@ -196,10 +178,8 @@ class SubvoatUtils():
         # see if the user already voted, if so change the vote direction if its different 
 
         sq = self.session.query(Thread).filter(Thread.uuid == thread_uuid).subquery()
-        #sq = self.db.session.query(self.classes.thread).filter(self.classes.thread.uuid == thread_uuid).subquery()
        
         q = self.session.query(ThreadVote, sq).filter(ThreadVote.user_id == user_id).first() 
-        #q  = self.db.session.query(self.classes.thread_vote, sq).filter(self.classes.thread_vote.user_id == user_id).first()
 
     
         # if the vote doesn't exist, create it and commit it
@@ -208,7 +188,7 @@ class SubvoatUtils():
 
             thread.votes.append(new_vote)
 
-            self.db.session.add(thread)
+            self.session.add(thread)
 
             if not transaction.commit():
                 return [True, 'vote added']
@@ -223,7 +203,7 @@ class SubvoatUtils():
         # Otherwise update the vote direction 
         else:
             q.ThreadVote.direction = int(direction)
-            self.db.session.add(q.vote)
+            self.session.add(q.vote)
 
             if not transaction.commit():
                 return [True, 'vote changed']
@@ -258,11 +238,6 @@ class SubvoatUtils():
 
         q = self.session.query(CommentVote, sq).filter(CommentVote.user_id == user_id).first()
 
-        #sq = self.db.session.query(self.classes.comment).filter(self.classes.comment.uuid == comment_uuid).subquery()
-
-        #q  = self.db.session.query(self.classes.comment_vote, sq).filter(self.classes.comment_vote.user_id == user_id).first()
-
-        
         if not q:
             new_vote = CommentVote(user_id=user_id, direction=direction)
 

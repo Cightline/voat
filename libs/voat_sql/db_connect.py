@@ -10,10 +10,10 @@ from zope.sqlalchemy import register
 class Connect():
     def __init__(self, db_path):
         self.base   = declarative_base()
-        self.engine = create_engine(db_path, convert_unicode=True, pool_size=0)
+        self.engine = create_engine(db_path, convert_unicode=True, pool_size=100)
 
         #self.base.prepare(self.engine, reflect=True)
-        #self.session = scoped_session(sessionmaker(bind=self.engine, extension=ZopeTransactionExtension(keep_session=False)))
-        self.session = scoped_session(sessionmaker(bind=self.engine))
+        self.session = scoped_session(sessionmaker(bind=self.engine, twophase=True, extension=ZopeTransactionExtension()))
+        #self.session = scoped_session(sessionmaker(bind=self.engine))
 
-        #register(self.session, keep_session=True)
+        register(self.session, keep_session=True)

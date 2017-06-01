@@ -63,11 +63,15 @@ def test_listing_threads():
 
     data = requests.post('%s/get_threads' % (base_address), {'subvoat_name':'test_exists'}).json()
 
+    print("THREADS")
     print(data)
 
-    thread_uuid = data['result'][0]['uuid']
-   
-    print(requests.post('%s/get_comments' % (base_address), {'thread_uuid':thread_uuid}).json())
+    # last thread is the oldest, you want this one, it has the comments
+    thread_uuid = data['result'][-1]['uuid']
+    
+  
+    #print("COMMENTS")
+    #print(requests.post('%s/get_comments' % (base_address), {'thread_uuid':thread_uuid}).json())
 
 
 def test_posting_comment():
