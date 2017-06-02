@@ -44,7 +44,8 @@ class AddSubvoat(Resource):
     
         # If not create it (FIX: should probably add some rate-limiting or something around here)
         new_subvoat = self.subvoat_utils.create_subvoat_object(name=args.get('subvoat_name'), creation_date=datetime.datetime.utcnow())
-
+        
+        # FIX: why do I have to do this?, see libs/voat_sql/utils/subvoat.py "add_thread()"
         new_subvoat.owner_id   = u_result.id
         new_subvoat.creator_id = u_result.id
     
@@ -174,7 +175,7 @@ class GetThreads(Resource):
                                 'local_id':t.id,
                                 'title':t.title,
                                 'body':t.body,
-                                'username':t.creator.id,
+                                'creator':self.user_utils.get_user_by_id(t.creator_id)[1].username,
                                 'creation_date':t.creation_date.isoformat(),
                                 'votes':c})
 

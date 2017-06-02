@@ -116,15 +116,15 @@ class Performance():
 
         self.check(result)
 
-        #print(result.json()['result'][0])
+        print(result.json()['result'])
 
         print('%s threads, execution time: %s' % (len(result.json()['result']), result_time))
 
     
-    def generate_threads(self):
+    def generate_threads(self, count):
         api_token = self.get_api_token()
 
-        for x in range(100):
+        for x in range(count):
            
             title = ''.join(random.choices(string.ascii_letters, k=10))
             body  = ''.join(random.choices(string.ascii_letters, k=100))
@@ -147,7 +147,7 @@ if __name__ == '__main__':
     parser.add_argument('--list-subvoats',       dest='list_subvoats',       action='store_true')
     parser.add_argument('--list-comments',       dest='list_comments',       action='store_true')
     parser.add_argument('--list-threads',        dest='list_threads',        action='store_true')
-    parser.add_argument('--gen-threads',         dest='gen_threads',         action='store_true')
+    parser.add_argument('--gen-threads',         dest='gen_threads',         action='store', type=int, default=0)
     parser.add_argument('--test-create-user',    dest='test_create_user',    action='store_true')
     parser.add_argument('--test-create-subvoat', dest='test_create_subvoat', action='store', type=int, default=0)
 
@@ -164,7 +164,7 @@ if __name__ == '__main__':
         p.list_threads()
 
     elif args.gen_threads:
-        p.generate_threads()
+        p.generate_threads(args.gen_threads)
 
     elif args.test_create_user:
         p.create_test_user()

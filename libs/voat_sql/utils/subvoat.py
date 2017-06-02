@@ -110,11 +110,9 @@ class SubvoatUtils():
         new_thread = self.create_thread_object(uuid=str(uuid.uuid4()),
                                                title=title,
                                                body=body,
-                                               user_id=result.id,
+                                               creator_id=user_obj.id,
                                                creation_date=now)
 
-        # Add the thread to the users "created subvoats"
-        user_obj.created_subvoats.append(new_thread)
 
         # Append the thread to the subvoat
         subvoat.threads.append(new_thread)
