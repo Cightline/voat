@@ -2,6 +2,8 @@ from voat_sql import *
 
 # I'll have to look more into this, there may be a better way. 
 
+# SQL will whine if you have the same backref names per schema
+
 class SubVoat(Base):
     __tablename__ = 'subvoat'
     
@@ -9,11 +11,12 @@ class SubVoat(Base):
     name          = Column(String(200), unique=True, nullable=False)
     creation_date = Column(DateTime)
     # FIX: make owner_id/creator_id a one-to-one relationship
-    creator_id    = Column(Integer)
-    threads       = relationship('Thread',    backref=backref('thread',    lazy='noload'))
-    moderators    = relationship('Moderator', backref=backref('moderator', lazy='noload'))
-    admins        = relationship('SubAdmin',     backref=backref('sub_admin',     lazy='noload'))
-    owner_id      = Column(Integer, ForeignKey('user.id'))
+    # FIX: also test deleting the user after thread creation
+    owner_id      = Column(Integer, ForeignKey('v_user.id'))
+    creator_id    = Column(Integer, ForeignKey('v_user.id'))
+    threads       = relationship('Thread',    backref=backref('thread',           lazy='noload'))
+    moderators    = relationship('Moderator', backref=backref('moderator',        lazy='noload'))
+    admins        = relationship('SubAdmin',  backref=backref('sub_admin',        lazy='noload'))
 
 
 class Thread(Base):
@@ -23,11 +26,11 @@ class Thread(Base):
     uuid          = Column(String(200), unique=True)
     title         = Column(String(200))
     body          = Column(String(200))
-    user_id       = Column(Integer)
     creation_date = Column(DateTime)
-    subvoat_id    = Column(Integer, ForeignKey('subvoat.id'))
     votes         = relationship('ThreadVote',    backref=backref('thread_vote', lazy='noload'))
     comments      = relationship('Comment',       backref=backref('comment',     lazy='noload'))
+    creator_id    = Column(Integer, ForeignKey('v_user.id'))
+    subvoat_id    = Column(Integer, ForeignKey('subvoat.id'))
 
 
 class Comment(Base):
@@ -47,7 +50,7 @@ class Comment(Base):
 
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'v_user'
 
     id                = Column(Integer, primary_key=True)
     registration_date = Column(DateTime)
@@ -59,33 +62,38 @@ class User(Base):
     banned            = Column(Boolean)
     verified          = Column(Boolean, default=False)
     site_admin        = Column(Boolean, default=False)
+
+    owned_subvoat_ids = Column(Integer, ForeignKey('subvoat.id'))
+    owned_subvoats    = relationship('SubVoat',   uselist=True, foreign_keys=[owned_subvoat_ids], lazy='noload')
+   
+    created_subvoat_ids = Column(Integer, ForeignKey('subvoat.id'))
+    created_subvoats    = relationship('SubVoat',   uselist=True, foreign_keys=[created_subvoat_ids], lazy='noload')
     
-    
-    subvoat_admin     = relationship('SubAdmin',  backref=backref('user_sub_admin', lazy='noload'))
-    subvoat_moderator = relationship('Moderator', backref=backref('user_moderator', lazy='noload'))
-    owned_subvoats    = relationship('SubVoat',   backref=backref('subvoat',   lazy='noload'))
-    subscribed_subs   = relationship('Sub',       backref=backref('sub',       lazy='noload'))
+    created_threads   = relationship('Thread',    backref=backref('created_threads',          lazy='noload'))
+    subvoat_admin     = relationship('SubAdmin',  backref=backref('user_sub_admin',  lazy='noload'))
+    subvoat_moderator = relationship('Moderator', backref=backref('user_moderator',  lazy='noload'))
+    subscribed_subs   = relationship('Sub',       backref=backref('sub',             lazy='noload'))
 
 
 class SubAdmin(Base):
     __tablename__ = 'sub_admin'
 
     id         = Column(Integer, primary_key=True)
-    user_id    = Column(Integer, ForeignKey('user.id'))
+    user_id    = Column(Integer, ForeignKey('v_user.id'))
     subvoat_id = Column(Integer, ForeignKey('subvoat.id'))
 
 
 class Moderator(Base):
     __tablename__ = 'moderator'
     id           = Column(Integer, primary_key=True)
-    user_id      = Column(Integer, ForeignKey('user.id'))
+    user_id      = Column(Integer, ForeignKey('v_user.id'))
     subvoat_id   = Column(Integer, ForeignKey('subvoat.id'))
 
 
 class Sub(Base):
     __tablename__ = 'sub'
     
-    user_id    = Column(Integer, ForeignKey('user.id'), primary_key=True)
+    user_id    = Column(Integer, ForeignKey('v_user.id'), primary_key=True)
     subvoat_id = Column(Integer, ForeignKey('subvoat.id'))
 
 

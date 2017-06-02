@@ -87,19 +87,34 @@ class Valid():
         return self.try_schema('password', password, schema)
 
 
-    def user(self, username, password):
+    def api_token(self, api_token):
+        # FIX: make this actually check the token type
+        schema = Schema({ Required('api_token'): All(str, Length(min=36, max=36))})
+
+        return self.try_schema('api_token', api_token, schema)
 
 
+    def user(self, username, password=None, api_token=None):
         u_status, u_result = self.username(username)
 
         if not u_status:
             return [u_status, u_result]
 
-        
-        p_status, p_result = self.password(password)
 
-        if not p_status:
-            return [p_status, p_result]
+        if password:
+            p_status, p_result = self.password(password)
+
+            if not p_status:
+                return [p_status, p_result]
+
+        elif api_token:
+            a_status, a_result = self.api_token(api_token)
+
+            if not a_status:
+                return [a_status, a_result]
+
+        elif not password and not api_token:
+            return [False, 'something happend']
 
         return [True, None]
         

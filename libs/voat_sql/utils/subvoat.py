@@ -50,10 +50,12 @@ class SubvoatUtils():
         return self.session.query(SubVoat).all()
 
 
-    
-    def add_subvoat(self, new_subvoat):
+   
 
-        self.session.add(new_subvoat)
+    def add_subvoat(self, subvoat_obj):
+        ''' Bascially just commits, trying to keep db.session out of the main functions'''
+
+        self.session.add(subvoat_obj)
         
         result = transaction.commit()
 
@@ -89,7 +91,7 @@ class SubvoatUtils():
 
 
     # Returns [result, message]
-    def add_thread(self, subvoat_name, title, body, username):
+    def add_thread(self, subvoat_name, title, body, user_obj):
 
         t_status, t_result = self.validate.thread(subvoat_name=subvoat_name,
                                                   title=title,
@@ -103,32 +105,24 @@ class SubvoatUtils():
         if not subvoat:
             return [False, 'subvoat does not exist']
 
-        # We need to use the user.id  
-    
-        status, result = self.user_utils.get_user(username)
-
-        if not status:
-            return [False, result]
-
        
-        # Should this even be here?
-        elif not result:
-            return [False, 'user does not exist']
-
         now = datetime.datetime.utcnow()
         new_thread = self.create_thread_object(uuid=str(uuid.uuid4()),
-                                           title=title,
-                                           body=body,
-                                           user_id=result.id,
-                                           creation_date=now)
+                                               title=title,
+                                               body=body,
+                                               user_id=result.id,
+                                               creation_date=now)
 
+        # Add the thread to the users "created subvoats"
+        user_obj.created_subvoats.append(new_thread)
+
+        # Append the thread to the subvoat
         subvoat.threads.append(new_thread)
 
         transaction.commit()
 
-        # JUST TESTING, FIX THIS (MAKE IT ASYNC, OTHERWISE IT WILL BLOCK)
-
-        send_thread.delay()
+        # FIX: 
+        #send_thread.delay()
 
         return [True, 'thread added']
 
@@ -145,6 +139,7 @@ class SubvoatUtils():
         threads = self.session.query(Thread).order_by(Thread.id.desc()).filter(SubVoat.name == subvoat_name).limit(pages)
 
         return [True, threads]
+
 
     def get_thread_by_uuid(self, uuid):
         thread = self.session.query(Thread).filter(Thread.uuid == uuid).first()

@@ -14,13 +14,11 @@ class Register(Resource):
         parser.add_argument('username')
         parser.add_argument('password')
 
-
         args = parser.parse_args()
-
     
         status, result = self.user_utils.add_user(password=args.get('password'), username=args.get('username'))
 
         if status == True:
-            return {'success': result}
+            return {'result': result}
 
         return {'error':result}
