@@ -184,28 +184,23 @@ class GetThreads(Resource):
     
 
 
-class GetComments(Resource):
+class GetThread(Resource):
     def __init__(self, **kwargs):
         self.db            = kwargs['db']
         self.subvoat_utils = kwargs['subvoat_utils']
         self.user_utils    = kwargs['user_utils']
         self.validate      = kwargs['validate']
 
-    def post(self):
-        parser = reqparse.RequestParser()
-
-        parser.add_argument('thread_uuid')
-
-        args        = parser.parse_args()
+    def post(self, thread_uuid):
         return_data = []
     
         
-        v_status, v_result = self.validate.uuid(args.get('thread_uuid'))
+        v_status, v_result = self.validate.uuid(thread_uuid)
 
         if not v_status:
             return {'error':v_result}
 
-        comments = self.subvoat_utils.get_comments(args.get('thread_uuid'))
+        comments = self.subvoat_utils.get_comments(thread_uuid)
 
         # append the data to a list and return it. Also change the user_id to username.
         for comment in comments:

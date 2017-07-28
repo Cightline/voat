@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<script
+    src="https://code.jquery.com/jquery-3.2.1.js"
+    integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+    crossorigin="anonymous">
+</script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+<script>
+    var threads; 
+
+    function store_threads(success)
+    {
+        threads = success;
+    }
+
+
+    function write_threads(threads)
+    {
+        for (var i = 0; i < threads['result'].length; i++)
+        {
+            var thread = threads['result'][i];
+
+            document.getElementById('threads').innerHTML += '<div class="row"><div class="col-md-1">' + "<a href=http://localhost:5000/get_thread/" + thread.uuid + ">" + thread.title + "</div></div>";
+        }
+    }
+
+    function load_threads()
+    {
+
+        $.ajax({
+            type: "POST",
+            data: {"subvoat_name":"test_exists"},
+            dataType: "json",
+            url: "http://localhost:5000/get_threads",
+            success: write_threads,
+            fail:  function() { alert("error") }
+            })
+    }
+
+
+    function write_subvoats(subvoats)
+    {
+        for (var i = 0; i < subvoats['result'].length; i++)
+        {
+            var subvoat = subvoats['result'][i];
+            document.getElementById('subvoats').innerHTML += '<div class="row"><div class="col-md-1">' + "<a href=http://localhost:5000/get_threads/" + subvoat.name + ">" + subvoat.name + "</div></div>";
+
+
+
+        }
+    }
+
+    function list_subvoats()
+    {
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "http://localhost:5000/list_subvoats",
+            success: write_subvoats,
+            fail: function() { alert("error with listing subvoats") }
+        })
+    }
+
+    //load_threads();
+    list_subvoats();
+   
+</script>
+
+<div class="container-fluid">
+    <span id="threads">
+</div>
+
+
+<div class="container-fluid">
+    <span id="subvoats">
+</div>

@@ -46,10 +46,10 @@ api.add_resource(register.Register,         '/register',       resource_class_kw
 api.add_resource(subvoat.AddSubvoat,        '/create_subvoat', resource_class_kwargs=kwargs)
 api.add_resource(subvoat.ListSubvoats,      '/list_subvoats',  resource_class_kwargs=kwargs)
 api.add_resource(subvoat.GetThreads,        '/get_threads',    resource_class_kwargs=kwargs)
+api.add_resource(subvoat.GetThread,         '/get_thread/<string:thread_uuid>',   resource_class_kwargs=kwargs)
 api.add_resource(subvoat.SubmitThread,      '/submit_thread',  resource_class_kwargs=kwargs)
 api.add_resource(vote.VoteThread,           '/vote_thread',    resource_class_kwargs=kwargs)
 api.add_resource(vote.VoteComment,          '/vote_comment',   resource_class_kwargs=kwargs)
-api.add_resource(subvoat.GetComments,       '/get_comments',   resource_class_kwargs=kwargs)
 api.add_resource(subvoat.SubmitComment,     '/submit_comment', resource_class_kwargs=kwargs)
 api.add_resource(utils.GetPublicKey,        '/get_public_key', resource_class_kwargs=kwargs)
 
