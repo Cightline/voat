@@ -131,12 +131,23 @@ class SubvoatUtils():
         pages = end - start
         print(pages)
         
-        if pages > self.config['max_pages_per_request']:
-            return [False, 'too many pages, %s is the max' % (self.config['max_pages_per_request'])]
+        if pages > self.config['max_threads_per_request']:
+            return [False, 'too many pages, %s is the max' % (self.config['max_threads_per_request'])]
 
-        threads = self.session.query(Thread).order_by(Thread.id.desc()).filter(SubVoat.name == subvoat_name).limit(pages)
+        #threads = self.session.query(Thread).order_by(Thread.id.desc()).filter(SubVoat.name == subvoat_name).limit(pages)
+
+        # SORT BY LATEST
+        #latest_thread = self.session.query(Thread).filter(SubVoat.name == subvoat_name).order_by(Thread.id.desc()).first()
+        threads = self.session.query(Thread).filter(SubVoat.name == subvoat_name).filter(Thread.id.between(start, end)).order_by(Thread.id.desc())
+       
+
 
         return [True, threads]
+
+
+    def get_latest_thread_id(self, subvoat_name):
+
+        latest_thread = self.session.query(Thread).filter(Subvoat.name == subvoat_name).order_by(Thread.id.desc()).first().id
 
 
     def get_thread_by_uuid(self, uuid):

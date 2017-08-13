@@ -7,4 +7,7 @@ if ! $(systemctl -q is-active postgresql); then
 
 fi
 
+cd libs/
+sudo python setup.py install 
+cd ..
 flask run --host 0.0.0.0 --port 5000

@@ -125,21 +125,25 @@ class GetThreads(Resource):
         self.validate      = kwargs['validate']
 
 
-    def post(self):  
+    def get(self, subvoat_name):  
         parser        = reqparse.RequestParser()
         return_data   = []
 
-        parser.add_argument('subvoat_name')
-        parser.add_argument('page_start', default=0)
-        parser.add_argument('page_end',   default=self.config['max_pages_per_request'])
+        parser.add_argument('thread_start', default=0)
+        parser.add_argument('thread_end',   default=self.config['max_threads_per_request'])
 
         args   = parser.parse_args()
 
-        start = args.get('page_start')
-        end   = args.get('page_end')
+        try:
+            start = int(args.get('thread_start'))
+            end   = int(args.get('thread_end'))
 
+        except Exception as e:
+            return {'error': 'unable to convert thread_start and/or thread_end to integers'}
+
+        print('FUCK', start, end)
         # FIX: move to SubvoatUtils
-        v_status, v_result = self.validate.subvoat_name(args.get('subvoat_name'))
+        v_status, v_result = self.validate.subvoat_name(subvoat_name)
 
         if not v_status:
             return {'error':v_result}
@@ -151,11 +155,11 @@ class GetThreads(Resource):
         
         
         # check to see if the subvoat even exists
-        if not self.subvoat_utils.get_subvoat(args.get('subvoat_name')):
+        if not self.subvoat_utils.get_subvoat(subvoat_name):
             return {'error':'no such subvoat'}, 404
 
 
-        t_status, t_result =  self.subvoat_utils.get_threads(args['subvoat_name'], start=start, end=end)
+        t_status, t_result =  self.subvoat_utils.get_threads(subvoat_name, start=start, end=end)
 
         if not t_status:
             return {'error':t_result}
@@ -182,6 +186,32 @@ class GetThreads(Resource):
         
         return {'result':return_data}
     
+class GetLatestThread(Resource):
+    def __init__(self, **kwargs):
+        self.db            = kwargs['db']
+        self.subvoat_utils = kwargs['subvoat_utils']
+        self.user_utils    = kwargs['user_utils']
+        self.validate      = kwargs['validate']
+
+
+    def get(self):
+        parser = reqparse.RequestParser()
+
+        parser.add_argument('subvoat_name')
+
+        args = parser.parse_args()
+
+      
+        subvoat_name = args.get('subvoat_name')
+        
+        v_status, v_result = self.validate.subvoat_name(subvoat_name)
+
+        if not v_status:
+            return {'error':v_result}
+
+        self.subvoat_utils.get_latest_thread(subvoat_name)
+
+
 
 
 class GetThread(Resource):

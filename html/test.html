@@ -35,14 +35,15 @@
         }
     }
 
-    function load_threads()
+    function view_threads(subvoat_name)
     {
+    
+        var url = 'http://localhost:5000/get_threads/' + subvoat_name;
 
         $.ajax({
             type: "POST",
-            data: {"subvoat_name":"test_exists"},
             dataType: "json",
-            url: "http://localhost:5000/get_threads",
+            url: url,
             success: write_threads,
             fail:  function() { alert("error") }
             })
@@ -54,7 +55,7 @@
         for (var i = 0; i < subvoats['result'].length; i++)
         {
             var subvoat = subvoats['result'][i];
-            document.getElementById('subvoats').innerHTML += '<div class="row"><div class="col-md-1">' + "<a href=http://localhost:5000/get_threads/" + subvoat.name + ">" + subvoat.name + "</div></div>";
+            document.getElementById('subvoats').innerHTML += '<div class="row"><div class="col-md-1">' + "<a href=# " + "onclick=view_threads(" + subvoat.name + ");>" + subvoat.name + "</div></div>";
 
 
 
@@ -72,16 +73,17 @@
         })
     }
 
+
     //load_threads();
     list_subvoats();
    
 </script>
 
 <div class="container-fluid">
-    <span id="threads">
+    <span id="threads"></span>
 </div>
 
 
 <div class="container-fluid">
-    <span id="subvoats">
+    <span id="subvoats"></span>
 </div>
